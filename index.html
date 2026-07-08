@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correctover — The Industry Standard for LLM Output Verification</title>
+    <meta name="description" content="Verify your Agent Infrastructure. Get your CCS Compliance Grade. The LLM output verification standard for production agent systems.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #0a0a0f;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* Nav */
+        header {
+            background: rgba(10,10,15,0.95);
+            border-bottom: 1px solid #1a1a2e;
+            padding: 18px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 22px; font-weight: 700; color: #e1e4e8; letter-spacing: -0.5px; }
+        nav a { margin-left: 28px; color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        nav a:hover { color: #e1e4e8; }
+
+        /* Hero */
+        .hero {
+            padding: 100px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        .status-bar {
+            display: inline-block;
+            background: rgba(255,68,68,0.15);
+            border: 1px solid rgba(255,68,68,0.4);
+            color: #ff4444;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            animation: glow 3s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255,68,68,0.2); }
+            50% { box-shadow: 0 0 25px rgba(255,68,68,0.4); }
+        }
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            color: #e1e4e8;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        .hero .tagline {
+            font-size: 20px;
+            color: #9ca3af;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .install-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #a5d6ff;
+        }
+        .install-box .prompt { color: #7ee787; }
+        .cta-group { margin-top: 20px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            margin: 5px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #e1e4e8; color: #0a0a0f; }
+        .btn-primary:hover { background: #fff; transform: translateY(-1px); }
+        .btn-ghost { background: transparent; color: #9ca3af; border: 1px solid #30363d; }
+        .btn-ghost:hover { color: #e1e4e8; border-color: #6b7280; }
+
+        /* Sections */
+        section { padding: 80px 0; border-bottom: 1px solid #1a1a2e; }
+        section h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+            color: #e1e4e8;
+        }
+        .section-sub {
+            text-align: center;
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 50px;
+        }
+
+        /* Wall of Shame / Compliance Matrix */
+        .wall-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .wall-table th {
+            background: #161b22;
+            color: #9ca3af;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #30363d;
+        }
+        .wall-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #1a1a2e;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        .wall-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .score-bar {
+            display: inline-block;
+            height: 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .level-broken { color: #ff4444; font-weight: 700; font-family: monospace; }
+        .level-noncompliant { color: #f97316; font-weight: 700; font-family: monospace; }
+        .level-conditional { color: #eab308; font-weight: 700; font-family: monospace; }
+        .level-certified { color: #22c55e; font-weight: 700; font-family: monospace; }
+
+        .verdict-box {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255,68,68,0.05);
+            border: 1px solid rgba(255,68,68,0.2);
+            border-radius: 8px;
+        }
+        .verdict-number { font-size: 56px; font-weight: 800; color: #ff4444; }
+        .verdict-text { color: #6b7280; font-size: 16px; margin-top: 8px; }
+
+        /* Terminal */
+        .terminal {
+            background: #0d1117;
+            border: 1px solid #1a1a2e;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .terminal-bar {
+            background: #161b22;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-r { background: #ff5f56; }
+        .dot-y { background: #ffbd2e; }
+        .dot-g { background: #27c93f; }
+        .terminal-bar span { color: #484f58; font-size: 13px; margin-left: 8px; font-family: monospace; }
+        .terminal-body {
+            padding: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            overflow-x: auto;
+            color: #8b949e;
+        }
+        .t-red { color: #ff4444; font-weight: bold; }
+        .t-yellow { color: #eab308; }
+        .t-green { color: #22c55e; }
+        .t-blue { color: #58a6ff; }
+        .t-dim { color: #484f58; }
+
+        /* Dimensions Grid */
+        .dim-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .dim-card {
+            background: #161b22;
+            border: 1px solid #1a1a2e;
+            padding: 24px 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .dim-card .dim-label {
+            font-size: 24px;
+            font-weight: 800;
+            color: #58a6ff;
+            margin-bottom: 8px;
+        }
+        .dim-card h4 { font-size: 13px; color: #e1e4e8; margin-bottom: 6px; }
+        .dim-card p { font-size: 12px; color: #6b7280; }
+
+        /* Code */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #1a1a2e;
+            padding: 24px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-x: auto;
+            color: #8b949e;
+        }
+        .code-block .kw { color: #ff7b72; }
+        .code-block .str { color: #a5d6ff; }
+        .code-block .fn { color: #d2a8ff; }
+        .code-block .cm { color: #484f58; }
+
+        /* Components */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .comp-card {
+            background: #161b22;
+            border: 1px solid #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 2px solid #58a6ff;
+        }
+        .comp-card h4 { font-size: 14px; color: #e1e4e8; margin-bottom: 8px; }
+        .comp-card p { font-size: 12px; color: #6b7280; }
+
+        /* CTA */
+        .cta-section {
+            text-align: center;
+            background: linear-gradient(180deg, #0a0a0f 0%, #0f1219 100%);
+        }
+        .cta-section h2 { color: #e1e4e8; }
+        .cta-section p { color: #6b7280; font-size: 17px; max-width: 600px; margin: 0 auto 30px; }
+        .cta-highlight {
+            color: #ff4444;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid #1a1a2e;
+        }
+        footer p { color: #484f58; font-size: 13px; }
+        footer a { color: #58a6ff; text-decoration: none; margin: 0 12px; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .dim-grid, .comp-grid { grid-template-columns: repeat(2, 1fr); }
+            .wall-table { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Correctover</div>
+            <nav>
+                <a href="#matrix">Compliance Matrix</a>
+                <a href="#scanner">Scanner</a>
+                <a href="#protocol">Protocol</a>
+                <a href="#integration">Integration</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="status-bar">[ CCS Status: ⚠️ NON_COMPLIANT ]</div>
+            <h1>The Industry Standard for<br>LLM Output Verification</h1>
+            <p class="tagline">Don't guess if your agent is hallucinating.<br>Verify it against the Cryptographic Compliance Standard.</p>
+            <div class="install-box">
+                <span class="prompt">$</span> pip install correctover
+            </div>
+            <div class="cta-group">
+                <a href="https://doi.org/10.5281/zenodo.21234580" class="btn btn-primary">Read Specification</a>
+                <a href="https://github.com/Correctover/standards" class="btn btn-ghost">View CCS Protocol</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance Matrix / Wall -->
+    <section id="matrix">
+        <div class="container">
+            <h2>CCS Compliance Matrix</h2>
+            <p class="section-sub">20,299 real production responses. 7 models. 6 providers. One standard.</p>
+
+            <table class="wall-table">
+                <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>Model</th>
+                        <th>Score</th>
+                        <th>D1</th>
+                        <th>D2</th>
+                        <th>D3</th>
+                        <th>D4</th>
+                        <th>D5</th>
+                        <th>Certification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Meta</td>
+                        <td style="color:#e1e4e8">Llama-3.1-70B</td>
+                        <td><span class="score-bar" style="width:70px;background:#eab308"></span>70%</td>
+                        <td>100%</td>
+                        <td>75%</td>
+                        <td style="color:#ff4444">33%</td>
+                        <td>67%</td>
+                        <td>67%</td>
+                        <td class="level-conditional">⚠️ CONDITIONAL</td>
+                    </tr>
+                    <tr>
+                        <td>OpenAI</td>
+                        <td style="color:#e1e4e8">GPT-OSS-120B</td>
+                        <td><span class="score-bar" style="width:35px;background:#f97316"></span>35%</td>
+                        <td>67%</td>
+                        <td style="color:#ff4444">12%</td>
+                        <td>67%</td>
+                        <td>33%</td>
+                        <td>33%</td>
+                        <td class="level-noncompliant">❌ NON-COMPLIANT</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft</td>
+                        <td style="color:#e1e4e8">Phi-3.5-MoE</td>
+                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td class="level-broken">💀 BROKEN</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft</td>
+                        <td style="color:#e1e4e8">Phi-4-Multimodal</td>
+                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td class="level-broken">💀 BROKEN</td>
+                    </tr>
+                    <tr>
+                        <td>Databricks</td>
+                        <td style="color:#e1e4e8">DBRX</td>
+                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td class="level-broken">💀 BROKEN</td>
+                    </tr>
+                    <tr>
+                        <td>IBM</td>
+                        <td style="color:#e1e4e8">Granite-34B</td>
+                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td class="level-broken">💀 BROKEN</td>
+                    </tr>
+                    <tr>
+                        <td>Google</td>
+                        <td style="color:#e1e4e8">Gemma-3-12B</td>
+                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td style="color:#ff4444">0%</td>
+                        <td class="level-broken">💀 BROKEN</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="verdict-box">
+                <div class="verdict-number">0 / 7</div>
+                <div class="verdict-text">Zero models achieved CCS certification.<br><strong style="color:#ff4444">85.7% cannot be used in production agent systems.</strong></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scanner Terminal -->
+    <section id="scanner" style="background:#0d1117">
+        <div class="container">
+            <h2>CCS Compliance Scanner</h2>
+            <p class="section-sub">Run the full 5-dimension verification. Get your compliance grade.</p>
+
+            <div class="terminal">
+                <div class="terminal-bar">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-y"></div>
+                    <div class="dot dot-g"></div>
+                    <span>ccs_scanner — compliance scan</span>
+                </div>
+                <div class="terminal-body">
+<span class="t-dim">$</span> python -m correctover.scan --provider openai
+<br><br>
+<span class="t-blue">══════════════════════════════════════════════════════</span>
+<span class="t-blue">  CCS v1.0 COMPLIANCE REPORT</span>
+<span class="t-blue">  OPENAI / gpt-oss-120b</span>
+<span class="t-blue">══════════════════════════════════════════════════════</span>
+<br>
+  OVERALL SCORE: <span class="t-red">35.0%</span>
+  CERTIFICATION: <span class="t-red">❌ NON_COMPLIANT</span>
+<br>
+  ── 5-Dimension Verification ──────────────────────
+<br>
+  D1 Schema Compliance        █████████████░░░░░░░  <span class="t-yellow">66.7%</span>
+  D2 Arithmetic Integrity     <span class="t-red">██░░░░░░░░░░░░░░░░</span>  <span class="t-red">12.5%</span>
+     └─ SILENT_CORRUPTION: 2+3=6 returned with HTTP 200
+  D3 Factual Grounding        █████████████░░░░░░░  <span class="t-yellow">66.7%</span>
+     └─ HALLUCINATION: Fabricated 2 of 3 paper citations
+  D4 Temporal Consistency     ██████░░░░░░░░░░░░░░  33.3%
+  D5 Output Reproducibility   ██████░░░░░░░░░░░░░░  33.3%
+     └─ NON_DETERMINISTIC: Arithmetic varies between runs
+<br>
+  ── Verdict ───────────────────────────────────────
+<br>
+  <span class="t-red">❌ NON-COMPLIANT: This model CANNOT be used in production</span>
+  <span class="t-red">   agent systems without CCS verification layer.</span>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:30px;">
+                <a href="https://github.com/Correctover/correctover.github.io/blob/main/demo/ccs_scanner.py" class="btn btn-ghost">View Scanner Source</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Protocol / Dimensions -->
+    <section id="protocol">
+        <div class="container">
+            <h2>5 Verification Dimensions</h2>
+            <p class="section-sub">Required(τ) ⊆ Supported(τ) — the invariant that defines compliance.</p>
+
+            <div class="dim-grid">
+                <div class="dim-card">
+                    <div class="dim-label">D1</div>
+                    <h4>Schema</h4>
+                    <p>Does output match required structure?</p>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-label">D2</div>
+                    <h4>Arithmetic</h4>
+                    <p>Does 2+3=5? Silent corruption detection.</p>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-label">D3</div>
+                    <h4>Factual</h4>
+                    <p>Are references real or hallucinated?</p>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-label">D4</div>
+                    <h4>Temporal</h4>
+                    <p>Is the model time-aware? Stale knowledge.</p>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-label">D5</div>
+                    <h4>Reproducibility</h4>
+                    <p>Same input → same output? Determinism.</p>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:40px;">
+                <table class="wall-table" style="max-width:700px; margin:0 auto;">
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Criteria</th>
+                            <th>Production Ready</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="level-certified">✅ CERTIFIED</td>
+                            <td>≥95% across all 5 dimensions</td>
+                            <td style="color:#22c55e">Yes</td>
+                        </tr>
+                        <tr>
+                            <td class="level-conditional">⚠️ CONDITIONAL</td>
+                            <td>70-95%, architectural limitations</td>
+                            <td style="color:#eab308">Only with CCS runtime</td>
+                        </tr>
+                        <tr>
+                            <td class="level-noncompliant">❌ NON-COMPLIANT</td>
+                            <td>&lt;70%, schema violations</td>
+                            <td style="color:#ff4444">No</td>
+                        </tr>
+                        <tr>
+                            <td class="level-broken">💀 BROKEN</td>
+                            <td>0%, fundamental failures</td>
+                            <td style="color:#ff4444">Absolutely not</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration -->
+    <section id="integration" style="background:#0d1117">
+        <div class="container">
+            <h2>30-Second Integration</h2>
+            <p class="section-sub">One install. Three lines. Production-ready verification.</p>
+
+            <div class="code-block">
+<span class="kw">from</span> correctover <span class="kw">import</span> CCSValidator
+
+validator = <span class="fn">CCSValidator</span>(
+    required_fields=[<span class="str">"result"</span>, <span class="str">"action"</span>, <span class="str">"timestamp"</span>],
+    forbidden_fields=[<span class="str">"error"</span>, <span class="str">"stack_trace"</span>],
+    enable_integrity=<span class="kw">True</span>
+)
+
+result = validator.<span class="fn">validate</span>(llm_output, trace_id=<span class="str">"agent-001"</span>)
+
+<span class="kw">if not</span> result.is_valid:
+    <span class="kw">raise</span> IntegrityViolation(result.errors)
+
+<span class="cm"># That's it. Your pipeline is now CCS-compliant.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Components -->
+    <section>
+        <div class="container">
+            <h2>The 5 Components</h2>
+            <div class="comp-grid">
+                <div class="comp-card">
+                    <h4>CCS-Core</h4>
+                    <p>Schema validation. Required/Supported/Forbidden fields.</p>
+                </div>
+                <div class="comp-card">
+                    <h4>CCS-Compliance</h4>
+                    <p>HIPAA, GDPR, SOC2 regulatory mapping.</p>
+                </div>
+                <div class="comp-card">
+                    <h4>CCS-Cost-Flow</h4>
+                    <p>Token budget enforcement.</p>
+                </div>
+                <div class="comp-card">
+                    <h4>CCS-Integrity</h4>
+                    <p>HMAC-based output binding.</p>
+                </div>
+                <div class="comp-card">
+                    <h4>CCS-Audit</h4>
+                    <p>Immutable audit trails.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Join the Integrity Movement</h2>
+            <p><strong class="cta-highlight">Q3 Industry Reliability Benchmark — July 11, 2026</strong></p>
+            <p>Frameworks that have not adopted CCS verification protocols will be categorized by their technical risk level.</p>
+            <div class="cta-group">
+                <a href="https://github.com/Correctover/standards" class="btn btn-primary">Documentation & Full Audit Methodology</a>
+                <a href="mailto:wangguigui@correctover.com" class="btn btn-ghost">Get Your Compliance Badge</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Correctover. All rights reserved.</p>
+            <p style="margin-top:10px;">
+                <a href="https://github.com/Correctover">GitHub</a>
+                <a href="https://pypi.org/project/correctover/">PyPI</a>
+                <a href="https://www.npmjs.com/package/correctover">npm</a>
+                <a href="https://doi.org/10.5281/zenodo.21234580">DOI</a>
+                <a href="https://correctover.github.io/disclosures/20260707-llm-verification-failures">Disclosures</a>
+            </p>
+            <p style="margin-top:16px; font-style:italic; color:#6b7280;">
+                Correctover doesn't failover. Correctover verifies.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
