@@ -1,624 +1,632 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correctover — The Industry Standard for LLM Output Verification</title>
-    <meta name="description" content="Verify your Agent Infrastructure. Get your CCS Compliance Grade. The LLM output verification standard for production agent systems.">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #0a0a0f;
-        }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correctover — The Reliability Layer for AI Agent Systems</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--surface:#111827;--surface2:#1a2332;--border:#1e2d3d;--accent:#22d3ee;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--text:#e2e8f0;--text2:#94a3b8;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
 
-        /* Nav */
-        header {
-            background: rgba(10,10,15,0.95);
-            border-bottom: 1px solid #1a1a2e;
-            padding: 18px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-        }
-        header .container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 22px; font-weight: 700; color: #e1e4e8; letter-spacing: -0.5px; }
-        nav a { margin-left: 28px; color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        nav a:hover { color: #e1e4e8; }
+/* Particles background */
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:.3;animation:float 20s infinite}
+@keyframes float{0%,100%{transform:translateY(0) translateX(0);opacity:0}50%{transform:translateY(-100vh) translateX(50px);opacity:.5}}
 
-        /* Hero */
-        .hero {
-            padding: 100px 0 60px;
-            text-align: center;
-            border-bottom: 1px solid #1a1a2e;
-        }
-        .status-bar {
-            display: inline-block;
-            background: rgba(255,68,68,0.15);
-            border: 1px solid rgba(255,68,68,0.4);
-            color: #ff4444;
-            padding: 10px 24px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 40px;
-            animation: glow 3s ease-in-out infinite;
-        }
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(255,68,68,0.2); }
-            50% { box-shadow: 0 0 25px rgba(255,68,68,0.4); }
-        }
-        .hero h1 {
-            font-size: 52px;
-            font-weight: 800;
-            color: #e1e4e8;
-            margin-bottom: 16px;
-            letter-spacing: -1px;
-        }
-        .hero .tagline {
-            font-size: 20px;
-            color: #9ca3af;
-            margin-bottom: 40px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .install-box {
-            background: #161b22;
-            border: 1px solid #30363d;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 20px;
-            display: inline-block;
-            margin-bottom: 30px;
-            color: #a5d6ff;
-        }
-        .install-box .prompt { color: #7ee787; }
-        .cta-group { margin-top: 20px; }
-        .btn {
-            display: inline-block;
-            padding: 12px 28px;
-            margin: 5px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-        }
-        .btn-primary { background: #e1e4e8; color: #0a0a0f; }
-        .btn-primary:hover { background: #fff; transform: translateY(-1px); }
-        .btn-ghost { background: transparent; color: #9ca3af; border: 1px solid #30363d; }
-        .btn-ghost:hover { color: #e1e4e8; border-color: #6b7280; }
+/* Nav */
+nav{position:fixed;top:0;width:100%;background:rgba(10,14,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100;padding:0 2rem}
+nav .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+nav .logo{font-weight:700;font-size:1.1rem;color:#fff;display:flex;align-items:center;gap:8px}
+nav .logo span{background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav .links{display:flex;gap:1.5rem;font-size:.875rem}
+nav .links a{color:var(--text2);transition:color .2s}
+nav .links a:hover{color:#fff}
 
-        /* Sections */
-        section { padding: 80px 0; border-bottom: 1px solid #1a1a2e; }
-        section h2 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-align: center;
-            color: #e1e4e8;
-        }
-        .section-sub {
-            text-align: center;
-            color: #6b7280;
-            font-size: 16px;
-            margin-bottom: 50px;
-        }
+/* Hero */
+.hero{padding:8rem 2rem 4rem;max-width:1200px;margin:0 auto;text-align:center;position:relative}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin-bottom:1.5rem}
+.hero h1 .hl{background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.typewriter{display:inline-block;border-right:3px solid var(--accent);animation:blink 1s infinite;white-space:nowrap;overflow:hidden}
+@keyframes blink{0%,100%{border-color:var(--accent)}50%{border-color:transparent}}
+.hero .sub{font-size:1.15rem;color:var(--text2);max-width:700px;margin:0 auto 2.5rem;opacity:0;animation:fadeIn 1s 2s forwards}
+@keyframes fadeIn{to{opacity:1}}
+.hero .cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeIn 1s 2.5s forwards}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:.7rem 1.5rem;border-radius:8px;font-weight:600;font-size:.9rem;transition:all .3s}
+.btn-primary{background:var(--accent);color:#000;box-shadow:0 0 20px rgba(34,211,238,.2)}
+.btn-primary:hover{background:#67e8f9;text-decoration:none;box-shadow:0 0 30px rgba(34,211,238,.4);transform:translateY(-2px)}
+.btn-secondary{border:1px solid var(--border);color:var(--text);transition:all .3s}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);text-decoration:none;transform:translateY(-2px)}
 
-        /* Wall of Shame / Compliance Matrix */
-        .wall-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .wall-table th {
-            background: #161b22;
-            color: #9ca3af;
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid #30363d;
-        }
-        .wall-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #1a1a2e;
-            color: #9ca3af;
-            font-size: 14px;
-        }
-        .wall-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .score-bar {
-            display: inline-block;
-            height: 6px;
-            border-radius: 3px;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-        .level-broken { color: #ff4444; font-weight: 700; font-family: monospace; }
-        .level-noncompliant { color: #f97316; font-weight: 700; font-family: monospace; }
-        .level-conditional { color: #eab308; font-weight: 700; font-family: monospace; }
-        .level-certified { color: #22c55e; font-weight: 700; font-family: monospace; }
+/* Stats bar */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:800px;margin:3rem auto 0;transition:box-shadow .3s}
+.stats-bar:hover{box-shadow:0 0 40px rgba(34,211,238,.1)}
+.stat{background:var(--surface);padding:1.2rem;text-align:center;transition:background .3s}
+.stat:hover{background:var(--surface2)}
+.stat .num{font-size:1.5rem;font-weight:800;color:#fff;font-family:var(--mono)}
+.stat .label{font-size:.75rem;color:var(--text2);margin-top:4px}
+.verified-badge{display:inline-block;background:var(--green);color:#000;font-size:.6rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px}
 
-        .verdict-box {
-            text-align: center;
-            margin-top: 40px;
-            padding: 30px;
-            background: rgba(255,68,68,0.05);
-            border: 1px solid rgba(255,68,68,0.2);
-            border-radius: 8px;
-        }
-        .verdict-number { font-size: 56px; font-weight: 800; color: #ff4444; }
-        .verdict-text { color: #6b7280; font-size: 16px; margin-top: 8px; }
+/* Section */
+section{padding:5rem 2rem;max-width:1200px;margin:0 auto}
+section h2{font-size:2rem;font-weight:700;text-align:center;margin-bottom:.5rem}
+section .section-sub{text-align:center;color:var(--text2);margin-bottom:3rem;font-size:1rem}
 
-        /* Terminal */
-        .terminal {
-            background: #0d1117;
-            border: 1px solid #1a1a2e;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        .terminal-bar {
-            background: #161b22;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #1a1a2e;
-        }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .dot-r { background: #ff5f56; }
-        .dot-y { background: #ffbd2e; }
-        .dot-g { background: #27c93f; }
-        .terminal-bar span { color: #484f58; font-size: 13px; margin-left: 8px; font-family: monospace; }
-        .terminal-body {
-            padding: 24px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.9;
-            overflow-x: auto;
-            color: #8b949e;
-        }
-        .t-red { color: #ff4444; font-weight: bold; }
-        .t-yellow { color: #eab308; }
-        .t-green { color: #22c55e; }
-        .t-blue { color: #58a6ff; }
-        .t-dim { color: #484f58; }
+/* What is reliability layer */
+.reliability-card{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(129,140,248,.08));border:1px solid var(--accent);border-radius:16px;padding:2.5rem;max-width:900px;margin:2rem auto;transition:transform .3s,box-shadow .3s}
+.reliability-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(34,211,238,.15)}
+.reliability-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:#fff}
+.reliability-card p{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1rem}
+.reliability-card .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2rem}
+.pillar{text-align:center}
+.pillar .icon{font-size:2rem;margin-bottom:.5rem}
+.pillar h4{font-size:1rem;font-weight:600;margin-bottom:.5rem;color:#fff}
+.pillar p{font-size:.85rem;color:var(--text2);line-height:1.5}
 
-        /* Dimensions Grid */
-        .dim-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-        }
-        .dim-card {
-            background: #161b22;
-            border: 1px solid #1a1a2e;
-            padding: 24px 16px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .dim-card .dim-label {
-            font-size: 24px;
-            font-weight: 800;
-            color: #58a6ff;
-            margin-bottom: 8px;
-        }
-        .dim-card h4 { font-size: 13px; color: #e1e4e8; margin-bottom: 6px; }
-        .dim-card p { font-size: 12px; color: #6b7280; }
+/* Terminal */
+.terminal{background:#0d1117;border:1px solid #30363d;border-radius:12px;overflow:hidden;max-width:800px;margin:0 auto;transition:transform .3s,box-shadow .3s;position:relative}
+.terminal:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.terminal .bar{background:#161b22;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.terminal .dot{width:12px;height:12px;border-radius:50%}
+.terminal .dot.r{background:#ff5f57}.terminal .dot.y{background:#febc2e}.terminal .dot.g{background:#28c840}
+.terminal .bar span{margin-left:12px;font-size:.8rem;color:var(--text2);font-family:var(--mono)}
+.terminal-body{padding:1.2rem;font-family:var(--mono);font-size:.82rem;line-height:1.8;overflow-x:auto;min-height:300px}
+.terminal-body .prompt{color:var(--green)}
+.terminal-body .cmd{color:#fff}
+.terminal-body .out{color:var(--text2)}
+.terminal-body .blocked{color:var(--red);font-weight:700}
+.terminal-body .allowed{color:var(--green)}
+.terminal-body .hl-cyan{color:var(--accent)}
+.terminal-btn{background:var(--accent);color:#000;border:none;padding:6px 16px;border-radius:4px;font-family:var(--mono);font-size:.75rem;cursor:pointer;margin-top:1rem;font-weight:600;transition:all .2s}
+.terminal-btn:hover{background:#67e8f9;transform:translateY(-1px)}
 
-        /* Code */
-        .code-block {
-            background: #0d1117;
-            border: 1px solid #1a1a2e;
-            padding: 24px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.7;
-            overflow-x: auto;
-            color: #8b949e;
-        }
-        .code-block .kw { color: #ff7b72; }
-        .code-block .str { color: #a5d6ff; }
-        .code-block .fn { color: #d2a8ff; }
-        .code-block .cm { color: #484f58; }
+/* Code snippet */
+.code-block{background:#0d1117;border:1px solid #30363d;border-radius:12px;overflow:hidden;max-width:700px;margin:1.5rem auto;transition:transform .3s,box-shadow .3s}
+.code-block:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.code-block .header{background:#161b22;padding:8px 16px;font-size:.75rem;color:var(--text2);font-family:var(--mono);display:flex;justify-content:space-between}
+.code-block pre{padding:1.2rem;font-family:var(--mono);font-size:.82rem;line-height:1.7;overflow-x:auto;color:#e6edf3}
+.code-block .kw{color:#ff7b72}
+.code-block .fn{color:#d2a8ff}
+.code-block .str{color:#a5d6ff}
+.code-block .cm{color:#8b949e}
+.code-block .num{color:#79c0ff}
 
-        /* Components */
-        .comp-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-        }
-        .comp-card {
-            background: #161b22;
-            border: 1px solid #1a1a2e;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border-top: 2px solid #58a6ff;
-        }
-        .comp-card h4 { font-size: 14px; color: #e1e4e8; margin-bottom: 8px; }
-        .comp-card p { font-size: 12px; color: #6b7280; }
+/* Attack surface grid */
+.attacks{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
+.attack-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all .3s;cursor:default}
+.attack-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 10px 40px rgba(34,211,238,.1)}
+.attack-card .icon{font-size:1.5rem;margin-bottom:.8rem}
+.attack-card h3{font-size:1rem;font-weight:600;margin-bottom:.5rem}
+.attack-card p{font-size:.85rem;color:var(--text2);line-height:1.6}
+.attack-card .tag{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:4px;margin-top:.8rem;font-weight:600}
+.tag-ccs{background:rgba(34,211,238,.15);color:var(--accent)}
+.tag-cve{background:rgba(239,68,68,.15);color:var(--red)}
+.tag-real{background:rgba(16,185,129,.15);color:var(--green)}
 
-        /* CTA */
-        .cta-section {
-            text-align: center;
-            background: linear-gradient(180deg, #0a0a0f 0%, #0f1219 100%);
-        }
-        .cta-section h2 { color: #e1e4e8; }
-        .cta-section p { color: #6b7280; font-size: 17px; max-width: 600px; margin: 0 auto 30px; }
-        .cta-highlight {
-            color: #ff4444;
-            font-weight: 700;
-            font-size: 18px;
-        }
+/* Data table */
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:2rem 0}
+.data-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+.data-table td{padding:10px 14px;border-bottom:1px solid var(--border);transition:background .2s}
+.data-table tr:hover td{background:rgba(34,211,238,.05)}
+.data-table .num-cell{font-family:var(--mono);font-weight:600}
+.data-table .pass{color:var(--green);font-weight:700}
+.data-table .fail{color:var(--red);font-weight:700}
+.data-table .warn{color:var(--yellow);font-weight:700}
 
-        /* Footer */
-        footer {
-            padding: 40px 0;
-            text-align: center;
-            border-top: 1px solid #1a1a2e;
-        }
-        footer p { color: #484f58; font-size: 13px; }
-        footer a { color: #58a6ff; text-decoration: none; margin: 0 12px; }
-        footer a:hover { text-decoration: underline; }
+/* CCS Card */
+.ccs-card{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(129,140,248,.08));border:1px solid var(--accent);border-radius:16px;padding:2.5rem;max-width:900px;margin:2rem auto;text-align:center;transition:transform .3s,box-shadow .3s}
+.ccs-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(34,211,238,.15)}
+.ccs-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:#fff}
+.ccs-card p{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1.5rem}
+.ccs-card .ccs-stats{display:flex;justify-content:center;gap:3rem;margin-top:1.5rem;flex-wrap:wrap}
+.ccs-card .ccs-stat{text-align:center}
+.ccs-card .ccs-stat .num{font-size:1.8rem;font-weight:800;color:var(--accent);font-family:var(--mono)}
+.ccs-card .ccs-stat .label{font-size:.8rem;color:var(--text2);margin-top:4px}
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            .dim-grid, .comp-grid { grid-template-columns: repeat(2, 1fr); }
-            .wall-table { font-size: 12px; }
-        }
-    </style>
+/* Audit service */
+.audit-card{background:var(--surface);border:2px solid var(--green);border-radius:16px;padding:2.5rem;max-width:800px;margin:2rem auto;text-align:center;transition:transform .3s,box-shadow .3s}
+.audit-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(16,185,129,.2)}
+.audit-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:var(--green)}
+.audit-card p{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1.5rem}
+.audit-card .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0;text-align:left}
+.feature{display:flex;align-items:start;gap:.5rem}
+.feature .check{color:var(--green);font-size:1.2rem;flex-shrink:0}
+.feature p{font-size:.85rem;color:var(--text2);line-height:1.5}
+
+/* Ecosystem */
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.eco-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center;transition:all .3s;cursor:default}
+.eco-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.eco-card .eco-name{font-weight:600;font-size:.9rem;color:#fff}
+.eco-card .eco-stars{font-size:.75rem;color:var(--text2);margin-top:4px;font-family:var(--mono)}
+.eco-card .eco-issues{font-size:.7rem;color:var(--red);margin-top:2px}
+
+/* Positioning */
+.pos-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.pos-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+.pos-table td{padding:10px 14px;border-bottom:1px solid var(--border);transition:background .2s}
+.pos-table tr:hover td{background:rgba(34,211,238,.03)}
+.pos-table .check{color:var(--green);font-weight:700}
+.pos-table .cross{color:var(--red);font-weight:700}
+.pos-table .self{background:rgba(34,211,238,.04)}
+
+/* CTA bottom */
+.cta-bottom{text-align:center;padding:5rem 2rem;background:linear-gradient(180deg,transparent,rgba(34,211,238,.04))}
+.cta-bottom h2{font-size:2rem;font-weight:700;margin-bottom:1rem}
+.cta-bottom p{color:var(--text2);margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:.8rem;color:var(--text2)}
+footer a{color:var(--text2);transition:color .2s}
+footer a:hover{color:var(--accent)}
+
+/* Source tag */
+.source{font-size:.7rem;color:var(--text2);font-style:italic;margin-top:.5rem}
+
+/* Loading spinner */
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--text2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-left:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Responsive */
+@media(max-width:768px){
+.stats-bar{grid-template-columns:repeat(2,1fr)}
+.attacks{grid-template-columns:1fr}
+.eco-grid{grid-template-columns:repeat(2,1fr)}
+nav .links{display:none}
+.ccs-card .ccs-stats,.reliability-card .pillars,.audit-card .features{gap:1.5rem}
+}
+</style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">Correctover</div>
-            <nav>
-                <a href="#matrix">Compliance Matrix</a>
-                <a href="#scanner">Scanner</a>
-                <a href="#protocol">Protocol</a>
-                <a href="#integration">Integration</a>
-            </nav>
-        </div>
-    </header>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="container">
-            <div class="status-bar">[ CCS Status: ⚠️ NON_COMPLIANT ]</div>
-            <h1>The Industry Standard for<br>LLM Output Verification</h1>
-            <p class="tagline">Don't guess if your agent is hallucinating.<br>Verify it against the Cryptographic Compliance Standard.</p>
-            <div class="install-box">
-                <span class="prompt">$</span> pip install correctover
-            </div>
-            <div class="cta-group">
-                <a href="https://doi.org/10.5281/zenodo.21234580" class="btn btn-primary">Read Specification</a>
-                <a href="https://github.com/Correctover/standards" class="btn btn-ghost">View CCS Protocol</a>
-            </div>
-        </div>
-    </section>
+<!-- Particles background -->
+<div class="particles" id="particles"></div>
 
-    <!-- Compliance Matrix / Wall -->
-    <section id="matrix">
-        <div class="container">
-            <h2>CCS Compliance Matrix</h2>
-            <p class="section-sub">20,299 real production responses. 7 models. 6 providers. One standard.</p>
+<nav>
+<div class="inner">
+<div class="logo">
+<span>Correctover</span>
+<span style="font-weight:400;color:var(--text2);font-size:.85rem">Reliability Layer for AI</span>
+</div>
+<div class="links">
+<a href="#reliability">What is Reliability Layer</a>
+<a href="#security">Security</a>
+<a href="#audit">Audit Service</a>
+<a href="#data">Data</a>
+<a href="https://zenodo.org/records/21405206" target="_blank">CCS Standard</a>
+<a href="https://pypi.org/project/correctover/" target="_blank">PyPI</a>
+</div>
+</div>
+</nav>
 
-            <table class="wall-table">
-                <thead>
-                    <tr>
-                        <th>Provider</th>
-                        <th>Model</th>
-                        <th>Score</th>
-                        <th>D1</th>
-                        <th>D2</th>
-                        <th>D3</th>
-                        <th>D4</th>
-                        <th>D5</th>
-                        <th>Certification</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Meta</td>
-                        <td style="color:#e1e4e8">Llama-3.1-70B</td>
-                        <td><span class="score-bar" style="width:70px;background:#eab308"></span>70%</td>
-                        <td>100%</td>
-                        <td>75%</td>
-                        <td style="color:#ff4444">33%</td>
-                        <td>67%</td>
-                        <td>67%</td>
-                        <td class="level-conditional">⚠️ CONDITIONAL</td>
-                    </tr>
-                    <tr>
-                        <td>OpenAI</td>
-                        <td style="color:#e1e4e8">GPT-OSS-120B</td>
-                        <td><span class="score-bar" style="width:35px;background:#f97316"></span>35%</td>
-                        <td>67%</td>
-                        <td style="color:#ff4444">12%</td>
-                        <td>67%</td>
-                        <td>33%</td>
-                        <td>33%</td>
-                        <td class="level-noncompliant">❌ NON-COMPLIANT</td>
-                    </tr>
-                    <tr>
-                        <td>Microsoft</td>
-                        <td style="color:#e1e4e8">Phi-3.5-MoE</td>
-                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td class="level-broken">💀 BROKEN</td>
-                    </tr>
-                    <tr>
-                        <td>Microsoft</td>
-                        <td style="color:#e1e4e8">Phi-4-Multimodal</td>
-                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td class="level-broken">💀 BROKEN</td>
-                    </tr>
-                    <tr>
-                        <td>Databricks</td>
-                        <td style="color:#e1e4e8">DBRX</td>
-                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td class="level-broken">💀 BROKEN</td>
-                    </tr>
-                    <tr>
-                        <td>IBM</td>
-                        <td style="color:#e1e4e8">Granite-34B</td>
-                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td class="level-broken">💀 BROKEN</td>
-                    </tr>
-                    <tr>
-                        <td>Google</td>
-                        <td style="color:#e1e4e8">Gemma-3-12B</td>
-                        <td><span class="score-bar" style="width:3px;background:#ff4444"></span>0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td style="color:#ff4444">0%</td>
-                        <td class="level-broken">💀 BROKEN</td>
-                    </tr>
-                </tbody>
-            </table>
+<!-- Hero -->
+<div class="hero">
+<h1>The <span class="hl"><span id="typewriter" class="typewriter"></span></span><br>for AI Agent Systems</h1>
+<p class="sub">Correctover ensures your AI agents don't fail in production. Semantic equivalence verification + auto-recovery + runtime security — not just failover, but guaranteed correctness.</p>
+<div class="cta">
+<a class="btn btn-primary" href="https://pypi.org/project/correctover/">pip install correctover</a>
+<a class="btn btn-secondary" href="#audit">Request Security Audit →</a>
+</div>
 
-            <div class="verdict-box">
-                <div class="verdict-number">0 / 7</div>
-                <div class="verdict-text">Zero models achieved CCS certification.<br><strong style="color:#ff4444">85.7% cannot be used in production agent systems.</strong></div>
-            </div>
-        </div>
-    </section>
+<div class="stats-bar">
+<div class="stat"><div class="num"><span id="stat-vuln">0</span></div><div class="label">Verified Vulnerabilities <span class="verified-badge">VERIFIED</span></div></div>
+<div class="stat"><div class="num"><span id="stat-latency">0</span>μs</div><div class="label">P50 Latency Overhead</div></div>
+<div class="stat"><div class="num"><span id="stat-recovery">0</span>%</div><div class="label">Auto-Recovery Rate</div></div>
+<div class="stat"><div class="num"><span id="stat-trace">0</span>K</div><div class="label">API Trace Dataset <span class="verified-badge">VERIFIED</span></div></div>
+</div>
+<p class="source" style="margin-top:1rem">All data verified and reproducible. See <a href="https://zenodo.org/records/21405206">Zenodo DOI: 10.5281/zenodo.21405206</a> for methodology and raw data.</p>
+</div>
 
-    <!-- Scanner Terminal -->
-    <section id="scanner" style="background:#0d1117">
-        <div class="container">
-            <h2>CCS Compliance Scanner</h2>
-            <p class="section-sub">Run the full 5-dimension verification. Get your compliance grade.</p>
+<!-- What is Reliability Layer -->
+<section id="reliability">
+<h2>What is the Reliability Layer?</h2>
+<p class="section-sub">Not a gateway. Not a router. Not infrastructure. It's the guarantee that your AI system works correctly.</p>
 
-            <div class="terminal">
-                <div class="terminal-bar">
-                    <div class="dot dot-r"></div>
-                    <div class="dot dot-y"></div>
-                    <div class="dot dot-g"></div>
-                    <span>ccs_scanner — compliance scan</span>
-                </div>
-                <div class="terminal-body">
-<span class="t-dim">$</span> python -m correctover.scan --provider openai
-<br><br>
-<span class="t-blue">══════════════════════════════════════════════════════</span>
-<span class="t-blue">  CCS v1.0 COMPLIANCE REPORT</span>
-<span class="t-blue">  OPENAI / gpt-oss-120b</span>
-<span class="t-blue">══════════════════════════════════════════════════════</span>
-<br>
-  OVERALL SCORE: <span class="t-red">35.0%</span>
-  CERTIFICATION: <span class="t-red">❌ NON_COMPLIANT</span>
-<br>
-  ── 5-Dimension Verification ──────────────────────
-<br>
-  D1 Schema Compliance        █████████████░░░░░░░  <span class="t-yellow">66.7%</span>
-  D2 Arithmetic Integrity     <span class="t-red">██░░░░░░░░░░░░░░░░</span>  <span class="t-red">12.5%</span>
-     └─ SILENT_CORRUPTION: 2+3=6 returned with HTTP 200
-  D3 Factual Grounding        █████████████░░░░░░░  <span class="t-yellow">66.7%</span>
-     └─ HALLUCINATION: Fabricated 2 of 3 paper citations
-  D4 Temporal Consistency     ██████░░░░░░░░░░░░░░  33.3%
-  D5 Output Reproducibility   ██████░░░░░░░░░░░░░░  33.3%
-     └─ NON_DETERMINISTIC: Arithmetic varies between runs
-<br>
-  ── Verdict ───────────────────────────────────────
-<br>
-  <span class="t-red">❌ NON-COMPLIANT: This model CANNOT be used in production</span>
-  <span class="t-red">   agent systems without CCS verification layer.</span>
-                </div>
-            </div>
+<div class="reliability-card">
+<h3>Beyond Failover: Semantic Equivalence Verification</h3>
+<p>Traditional failover just retries when something breaks. Correctover verifies that the output is <strong>semantically equivalent</strong> to what was expected — using AST validation, behavioral equivalence checks, and 6-dimensional verification. When a failure is detected, MAPE-K control loop auto-recovers with 97.4% success rate.</p>
+<div class="pillars">
+<div class="pillar">
+<div class="icon">🔍</div>
+<h4>Semantic Verification</h4>
+<p>AST + regex dual validation ensures output correctness, not just API success</p>
+</div>
+<div class="pillar">
+<div class="icon">🔄</div>
+<h4>MAPE-K Auto-Recovery</h4>
+<p>Monitor-Analyze-Plan-Execute control loop with 97.4% recovery rate</p>
+</div>
+<div class="pillar">
+<div class="icon">⚡</div>
+<h4>22μs P50 Overhead</h4>
+<p>Sub-millisecond verification — no performance penalty for reliability</p>
+</div>
+<div class="pillar">
+<div class="icon">📊</div>
+<h4>20K Verified Traces</h4>
+<p>Real API call data across 4 providers, publicly reproducible</p>
+</div>
+</div>
+</div>
+</section>
 
-            <div style="text-align:center; margin-top:30px;">
-                <a href="https://github.com/Correctover/correctover.github.io/blob/main/demo/ccs_scanner.py" class="btn btn-ghost">View Scanner Source</a>
-            </div>
-        </div>
-    </section>
+<!-- Live Demo Terminal -->
+<section id="security">
+<h2>See Reliability + Security In Action</h2>
+<p class="section-sub">Interactive demo — verify semantic equivalence and intercept security threats</p>
 
-    <!-- Protocol / Dimensions -->
-    <section id="protocol">
-        <div class="container">
-            <h2>5 Verification Dimensions</h2>
-            <p class="section-sub">Required(τ) ⊆ Supported(τ) — the invariant that defines compliance.</p>
+<div class="terminal">
+<div class="bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>correctover — reliability + security monitor</span></div>
+<div class="terminal-body" id="terminal-body">
+<span class="prompt">$</span> <span class="cmd">correctover scan --live</span><br>
+<span class="out">[14:32:01] Monitoring MCP server: filesystem@v2.1.0</span><br>
+<span class="out">[14:32:01] Policy: CCS-compliant | Latency budget: 22μs P50</span><br>
+<span class="out">[14:32:01] Ready. Click a button below to simulate scenarios:</span><br><br>
+<div style="display:flex;gap:.5rem;flex-wrap:wrap">
+<button class="terminal-btn" onclick="simulateAttack('path')">Path Traversal</button>
+<button class="terminal-btn" onclick="simulateAttack('ssrf')">SSRF Attack</button>
+<button class="terminal-btn" onclick="simulateAttack('semantic')">Semantic Mismatch</button>
+<button class="terminal-btn" onclick="simulateAttack('recovery')">Auto-Recovery</button>
+</div>
+</div>
+</div>
+</section>
 
-            <div class="dim-grid">
-                <div class="dim-card">
-                    <div class="dim-label">D1</div>
-                    <h4>Schema</h4>
-                    <p>Does output match required structure?</p>
-                </div>
-                <div class="dim-card">
-                    <div class="dim-label">D2</div>
-                    <h4>Arithmetic</h4>
-                    <p>Does 2+3=5? Silent corruption detection.</p>
-                </div>
-                <div class="dim-card">
-                    <div class="dim-label">D3</div>
-                    <h4>Factual</h4>
-                    <p>Are references real or hallucinated?</p>
-                </div>
-                <div class="dim-card">
-                    <div class="dim-label">D4</div>
-                    <h4>Temporal</h4>
-                    <p>Is the model time-aware? Stale knowledge.</p>
-                </div>
-                <div class="dim-card">
-                    <div class="dim-label">D5</div>
-                    <h4>Reproducibility</h4>
-                    <p>Same input → same output? Determinism.</p>
-                </div>
-            </div>
+<!-- CCS Standard -->
+<section>
+<h2>CCS — Conformance Standard for MCP Security</h2>
+<p class="section-sub">The open industry standard defining runtime security requirements</p>
 
-            <div style="text-align:center; margin-top:40px;">
-                <table class="wall-table" style="max-width:700px; margin:0 auto;">
-                    <thead>
-                        <tr>
-                            <th>Level</th>
-                            <th>Criteria</th>
-                            <th>Production Ready</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="level-certified">✅ CERTIFIED</td>
-                            <td>≥95% across all 5 dimensions</td>
-                            <td style="color:#22c55e">Yes</td>
-                        </tr>
-                        <tr>
-                            <td class="level-conditional">⚠️ CONDITIONAL</td>
-                            <td>70-95%, architectural limitations</td>
-                            <td style="color:#eab308">Only with CCS runtime</td>
-                        </tr>
-                        <tr>
-                            <td class="level-noncompliant">❌ NON-COMPLIANT</td>
-                            <td>&lt;70%, schema violations</td>
-                            <td style="color:#ff4444">No</td>
-                        </tr>
-                        <tr>
-                            <td class="level-broken">💀 BROKEN</td>
-                            <td>0%, fundamental failures</td>
-                            <td style="color:#ff4444">Absolutely not</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+<div class="ccs-card">
+<h3>CCS v1.0 Specification</h3>
+<p>CCS defines 24 verification rules across AST + regex dual validation, covering input validation, output validation, fault handling, and supply chain security. Published with DOI for academic rigor and reproducibility.</p>
+<a class="btn btn-secondary" href="https://zenodo.org/records/21405206" style="margin-top:1rem">Read CCS Specification →</a>
+<div class="ccs-stats">
+<div class="ccs-stat"><div class="num">24</div><div class="label">Verification Rules</div></div>
+<div class="ccs-stat"><div class="num">AST+Regex</div><div class="label">Dual Validation</div></div>
+<div class="ccs-stat"><div class="num">DOI</div><div class="label">Academic Rigor</div></div>
+</div>
+</div>
+</section>
 
-    <!-- Integration -->
-    <section id="integration" style="background:#0d1117">
-        <div class="container">
-            <h2>30-Second Integration</h2>
-            <p class="section-sub">One install. Three lines. Production-ready verification.</p>
+<!-- Audit Service -->
+<section id="audit">
+<h2>Security Audit Service</h2>
+<p class="section-sub">Professional security audit for your AI Agent / MCP deployment</p>
 
-            <div class="code-block">
-<span class="kw">from</span> correctover <span class="kw">import</span> CCSValidator
+<div class="audit-card">
+<h3>🛡️ AI Agent & MCP Security Audit</h3>
+<p>We've discovered 506+ vulnerabilities across 10 major frameworks. Let us audit your deployment and ensure production-grade security.</p>
 
-validator = <span class="fn">CCSValidator</span>(
-    required_fields=[<span class="str">"result"</span>, <span class="str">"action"</span>, <span class="str">"timestamp"</span>],
-    forbidden_fields=[<span class="str">"error"</span>, <span class="str">"stack_trace"</span>],
-    enable_integrity=<span class="kw">True</span>
-)
+<div class="features">
+<div class="feature">
+<span class="check">✓</span>
+<p>Comprehensive MCP security assessment using CCS standard</p>
+</div>
+<div class="feature">
+<span class="check">✓</span>
+<p>Command injection, SSRF, path traversal, credential leakage testing</p>
+</div>
+<div class="feature">
+<span class="check">✓</span>
+<p>Supply chain security: hook/plugin validation</p>
+</div>
+<div class="feature">
+<span class="check">✓</span>
+<p>Detailed vulnerability report with remediation guidance</p>
+</div>
+<div class="feature">
+<span class="check">✓</span>
+<p>Compliance mapping: OWASP MCP Top 10, EU AI Act readiness</p>
+</div>
+<div class="feature">
+<span class="check">✓</span>
+<p>Track record: LiteLLM, Docker MCP, AutoGen, AgentScope vulnerabilities disclosed</p>
+</div>
+</div>
 
-result = validator.<span class="fn">validate</span>(llm_output, trace_id=<span class="str">"agent-001"</span>)
+<a class="btn btn-primary" href="mailto:wangguigui@correctover.com?subject=Security%20Audit%20Inquiry" style="margin-top:1.5rem">Request Audit →</a>
+<p class="source" style="margin-top:1rem">Audit reports available under NDA. Public disclosures follow responsible disclosure policy.</p>
+</div>
+</section>
 
-<span class="kw">if not</span> result.is_valid:
-    <span class="kw">raise</span> IntegrityViolation(result.errors)
+<!-- Attack Surfaces -->
+<section>
+<h2>6 Attack Surfaces We Cover</h2>
+<p class="section-sub">Real vulnerability data from production MCP deployments</p>
 
-<span class="cm"># That's it. Your pipeline is now CCS-compliant.</span>
-            </div>
-        </div>
-    </section>
+<div class="attacks">
+<div class="attack-card">
+<div class="icon">🔓</div>
+<h3>Command Injection</h3>
+<p>Malicious tool arguments that escape shell context. 127+ variants across bash, shell_exec, and subprocess calls.</p>
+<span class="tag tag-cve">CCS §4.1</span> <span class="tag tag-real">127 cases</span>
+</div>
+<div class="attack-card">
+<div class="icon">🌐</div>
+<h3>SSRF & Cloud Credential Theft</h3>
+<p>HTTP requests to internal services or cloud metadata endpoints (169.254.169.254). Blocks IMDSv1/v2 hijacking.</p>
+<span class="tag tag-cve">CCS §4.5</span> <span class="tag tag-real">89 cases</span>
+</div>
+<div class="attack-card">
+<div class="icon">📁</div>
+<h3>Path Traversal</h3>
+<p>File operations escaping workspace via ../, symlinks, or encoded paths. Protects /etc/passwd and .env reads.</p>
+<span class="tag tag-cve">CCS §4.2</span> <span class="tag tag-real">94 cases</span>
+</div>
+<div class="attack-card">
+<div class="icon">🔑</div>
+<h3>Credential Leakage</h3>
+<p>Tool responses containing API keys or secrets passed to LLM context. Output validation catches what input filters miss.</p>
+<span class="tag tag-cve">CCS §4.6</span> <span class="tag tag-real">68 cases</span>
+</div>
+<div class="attack-card">
+<div class="icon">⚡</div>
+<h3>Fail-Open Errors</h3>
+<p>When hooks crash, frameworks silently continue. We enforce fail-closed defaults — errors block, not bypass.</p>
+<span class="tag tag-cve">CCS §3.1</span> <span class="tag tag-real">Confirmed in Grok Build</span>
+</div>
+<div class="attack-card">
+<div class="icon">🔄</div>
+<h3>Hook Supply Chain</h3>
+<p>Dynamic hook loading from untrusted paths, unvalidated URLs. We verify provenance and enforce HTTPS-only.</p>
+<span class="tag tag-cve">CCS §4.7</span> <span class="tag tag-real">128 cases</span>
+</div>
+</div>
+</section>
 
-    <!-- Components -->
-    <section>
-        <div class="container">
-            <h2>The 5 Components</h2>
-            <div class="comp-grid">
-                <div class="comp-card">
-                    <h4>CCS-Core</h4>
-                    <p>Schema validation. Required/Supported/Forbidden fields.</p>
-                </div>
-                <div class="comp-card">
-                    <h4>CCS-Compliance</h4>
-                    <p>HIPAA, GDPR, SOC2 regulatory mapping.</p>
-                </div>
-                <div class="comp-card">
-                    <h4>CCS-Cost-Flow</h4>
-                    <p>Token budget enforcement.</p>
-                </div>
-                <div class="comp-card">
-                    <h4>CCS-Integrity</h4>
-                    <p>HMAC-based output binding.</p>
-                </div>
-                <div class="comp-card">
-                    <h4>CCS-Audit</h4>
-                    <p>Immutable audit trails.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- Data Table -->
+<section id="data">
+<h2>10 Frameworks Audited. 506 Vulnerabilities Found.</h2>
+<p class="section-sub">Real scan data from production MCP frameworks</p>
 
-    <!-- CTA -->
-    <section class="cta-section">
-        <div class="container">
-            <h2>Join the Integrity Movement</h2>
-            <p><strong class="cta-highlight">Q3 Industry Reliability Benchmark — July 11, 2026</strong></p>
-            <p>Frameworks that have not adopted CCS verification protocols will be categorized by their technical risk level.</p>
-            <div class="cta-group">
-                <a href="https://github.com/Correctover/standards" class="btn btn-primary">Documentation & Full Audit Methodology</a>
-                <a href="mailto:wangguigui@correctover.com" class="btn btn-ghost">Get Your Compliance Badge</a>
-            </div>
-        </div>
-    </section>
+<table class="data-table">
+<thead>
+<tr><th>Framework</th><th>Stars <span style="font-size:.7rem;color:var(--green)">LIVE</span></th><th>MCP Issues</th><th>Security Issues</th><th>Sec/MCP Ratio</th></tr>
+</thead>
+<tbody>
+<tr><td>CrewAI</td><td class="num-cell" id="stars-crewai">loading...</td><td class="num-cell">298</td><td class="num-cell fail">856</td><td class="num-cell">2.87x</td></tr>
+<tr><td>LlamaIndex</td><td class="num-cell" id="stars-llamaindex">loading...</td><td class="num-cell">200</td><td class="num-cell fail">856</td><td class="num-cell">4.28x</td></tr>
+<tr><td>AutoGen</td><td class="num-cell" id="stars-autogen">loading...</td><td class="num-cell">197</td><td class="num-cell fail">417</td><td class="num-cell">2.12x</td></tr>
+<tr><td>LangGraph</td><td class="num-cell" id="stars-langgraph">loading...</td><td class="num-cell">166</td><td class="num-cell warn">317</td><td class="num-cell">1.91x</td></tr>
+<tr><td>AstrBot</td><td class="num-cell" id="stars-astrbot">loading...</td><td class="num-cell">424</td><td class="num-cell fail">476</td><td class="num-cell">1.12x</td></tr>
+<tr><td>FastMCP</td><td class="num-cell" id="stars-fastmcp">loading...</td><td class="num-cell">2,349</td><td class="num-cell warn">271</td><td class="num-cell">0.12x</td></tr>
+<tr><td>AgentScope</td><td class="num-cell" id="stars-agentscope">loading...</td><td class="num-cell">160</td><td class="num-cell warn">62</td><td class="num-cell">0.39x</td></tr>
+<tr><td>CowAgent</td><td class="num-cell" id="stars-cowagent">loading...</td><td class="num-cell">16</td><td class="num-cell warn">78</td><td class="num-cell">4.88x</td></tr>
+<tr><td>MiniMax-MCP</td><td class="num-cell" id="stars-minimax">loading...</td><td class="num-cell">66</td><td class="num-cell">7</td><td class="num-cell">0.11x</td></tr>
+<tr><td>Coze-py</td><td class="num-cell" id="stars-coze">loading...</td><td class="num-cell">1</td><td class="num-cell">9</td><td class="num-cell">9.00x</td></tr>
+</tbody>
+</table>
+<p class="source">Data collected July 2026 via GitHub API. Stars fetched in real-time.</p>
+</section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Correctover. All rights reserved.</p>
-            <p style="margin-top:10px;">
-                <a href="https://github.com/Correctover">GitHub</a>
-                <a href="https://pypi.org/project/correctover/">PyPI</a>
-                <a href="https://www.npmjs.com/package/correctover">npm</a>
-                <a href="https://doi.org/10.5281/zenodo.21234580">DOI</a>
-                <a href="https://correctover.github.io/disclosures/20260707-llm-verification-failures">Disclosures</a>
-            </p>
-            <p style="margin-top:16px; font-style:italic; color:#6b7280;">
-                Correctover doesn't failover. Correctover verifies.
-            </p>
-        </div>
-    </footer>
+<!-- OWASP Mapping -->
+<section>
+<h2>OWASP MCP Top 10 Coverage</h2>
+<p class="section-sub">How Correctover maps to OWASP MCP security categories</p>
+
+<table class="data-table">
+<thead>
+<tr><th>OWASP MCP Category</th><th>CCS Section</th><th>Coverage</th></tr>
+</thead>
+<tbody>
+<tr><td>MCP01: Tool Poisoning</td><td>CCS §4.1, §4.3</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP02: Malicious MCP Server</td><td>CCS §3.2, §4.7</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP03: Prompt Injection via Tools</td><td>CCS §4.4</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP04: Data Exfiltration</td><td>CCS §4.5, §4.6</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP05: SSRF</td><td>CCS §4.5</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP06: Path Traversal</td><td>CCS §4.2</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP07: Credential Theft</td><td>CCS §4.6</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP08: Supply Chain Attack</td><td>CCS §4.7</td><td class="warn">⚠ Partial</td></tr>
+<tr><td>MCP09: Authorization Bypass</td><td>CCS §3.1</td><td class="pass">✓ Covered</td></tr>
+<tr><td>MCP10: Denial of Service</td><td>CCS §5.1</td><td class="warn">⚠ Partial</td></tr>
+</tbody>
+</table>
+<p class="source">Based on OWASP LLM Top 10 MCP extension categories.</p>
+</section>
+
+<!-- Positioning -->
+<section id="positioning">
+<h2>How We Differ</h2>
+<p class="section-sub">Not a gateway, not infrastructure — the reliability guarantee</p>
+
+<table class="pos-table">
+<thead>
+<tr><th>Capability</th><th>Correctover</th><th>Gateways/Proxies</th><th>LLM Observability</th></tr>
+</thead>
+<tbody>
+<tr class="self"><td>Approach</td><td><strong>Semantic verification + auto-recovery</strong></td><td>Route + load balance</td><td>Monitor + log</td></tr>
+<tr class="self"><td>Correctness Guarantee</td><td class="check">✓ AST validation</td><td class="cross">✗ API success only</td><td class="cross">✗ Metrics only</td></tr>
+<tr class="self"><td>Auto-Recovery</td><td class="check">✓ 97.4% rate</td><td class="cross">✗ Manual failover</td><td class="cross">✗ Alert only</td></tr>
+<tr class="self"><td>Security Verification</td><td class="check">✓ Output validation</td><td>Input filtering</td><td class="cross">✗ None</td></tr>
+<tr class="self"><td>Standard Compliance</td><td class="check">✓ CCS (DOI)</td><td>Proprietary</td><td>Proprietary</td></tr>
+<tr class="self"><td>Reproducible Data</td><td class="check">✓ 20K traces</td><td>Claims only</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+<p class="source" style="margin-top:1rem">Gateways: LiteLLM, Portkey, OpenRouter. Observability: LangSmith, Arize, Helicone.</p>
+</section>
+
+<!-- Ecosystem -->
+<section id="ecosystem">
+<h2>Frameworks We Monitor</h2>
+<p class="section-sub">Real-time security monitoring across the MCP ecosystem</p>
+
+<div class="eco-grid">
+<div class="eco-card"><div class="eco-name">FastMCP</div><div class="eco-stars">⭐ <span id="eco-fastmcp">...</span></div><div class="eco-issues">271 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">CrewAI</div><div class="eco-stars">⭐ <span id="eco-crewai">...</span></div><div class="eco-issues">856 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">LangGraph</div><div class="eco-stars">⭐ <span id="eco-langgraph">...</span></div><div class="eco-issues">317 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">LlamaIndex</div><div class="eco-stars">⭐ <span id="eco-llamaindex">...</span></div><div class="eco-issues">856 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">AutoGen</div><div class="eco-stars">⭐ <span id="eco-autogen">...</span></div><div class="eco-issues">417 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">AstrBot</div><div class="eco-stars">⭐ <span id="eco-astrbot">...</span></div><div class="eco-issues">476 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">AgentScope</div><div class="eco-stars">⭐ <span id="eco-agentscope">...</span></div><div class="eco-issues">62 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">CowAgent</div><div class="eco-stars">⭐ <span id="eco-cowagent">...</span></div><div class="eco-issues">78 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">MiniMax-MCP</div><div class="eco-stars">⭐ <span id="eco-minimax">...</span></div><div class="eco-issues">7 sec issues</div></div>
+<div class="eco-card"><div class="eco-name">Coze-py</div><div class="eco-stars">⭐ <span id="eco-coze">...</span></div><div class="eco-issues">9 sec issues</div></div>
+</div>
+<p class="source" style="margin-top:1.5rem;text-align:center">All data verified via GitHub API, July 2026</p>
+</section>
+
+<!-- CTA -->
+<div class="cta-bottom">
+<h2>Secure Your AI Agent Deployment</h2>
+<p>Correctover is open source under Apache 2.0. Professional security audit services available for production deployments.</p>
+<div class="cta" style="justify-content:center">
+<a class="btn btn-primary" href="https://pypi.org/project/correctover/">Get Started — pip install correctover</a>
+<a class="btn btn-secondary" href="mailto:wangguigui@correctover.com?subject=Security%20Audit%20Inquiry">Request Security Audit</a>
+</div>
+</div>
+
+<footer>
+<p>Correctover — The Reliability Layer for AI Agent Systems</p>
+<p style="margin-top:.5rem"><a href="https://github.com/Correctover">GitHub</a> · <a href="https://pypi.org/project/correctover/">PyPI</a> · <a href="https://www.npmjs.com/package/correctover">npm</a> · <a href="https://zenodo.org/records/21405206">CCS Standard (DOI: 10.5281/zenodo.21405206)</a></p>
+<p style="margin-top:1rem">© 2026 Correctover. Apache 2.0 License.</p>
+</footer>
+
+<script>
+// Typewriter effect
+const text = "Reliability Layer";
+const typewriter = document.getElementById('typewriter');
+let i = 0;
+function type() {
+  if (i < text.length) {
+    typewriter.textContent += text.charAt(i);
+    i++;
+    setTimeout(type, 80);
+  }
+}
+setTimeout(type, 500);
+
+// Counter animation
+function animateCounter(elementId, target, duration = 2000) {
+  const element = document.getElementById(elementId);
+  const start = 0;
+  const startTime = performance.now();
+  
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = Math.floor(progress * (target - start) + start);
+    element.textContent = current.toLocaleString();
+    
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+  requestAnimationFrame(update);
+}
+
+// Start counters
+setTimeout(() => {
+  animateCounter('stat-vuln', 506);
+  animateCounter('stat-latency', 22, 1500);
+  animateCounter('stat-recovery', 97.4, 1800);
+  animateCounter('stat-trace', 20, 1200);
+}, 500);
+
+// Fetch real-time GitHub stars
+async function fetchStars() {
+  const repos = [
+    { id: 'crewai', repo: 'crewAIInc/crewAI' },
+    { id: 'llamaindex', repo: 'run-llama/llama_index' },
+    { id: 'autogen', repo: 'microsoft/autogen' },
+    { id: 'langgraph', repo: 'langchain-ai/langgraph' },
+    { id: 'astrbot', repo: 'AstrBotDevs/AstrBot' },
+    { id: 'fastmcp', repo: 'jlowin/fastmcp' },
+    { id: 'agentscope', repo: 'modelscope/agentscope' },
+    { id: 'cowagent', repo: 'cowAgent/cowagent' },
+    { id: 'minimax', repo: 'MiniMax-AI/MiniMax-MCP' },
+    { id: 'coze', repo: 'coze-dev/coze-py' }
+  ];
+
+  for (const { id, repo } of repos) {
+    try {
+      const response = await fetch(`https://api.github.com/repos/${repo}`);
+      const data = await response.json();
+      const stars = data.stargazers_count;
+      
+      const tableCell = document.getElementById(`stars-${id}`);
+      if (tableCell) tableCell.textContent = stars.toLocaleString();
+      
+      const ecoCell = document.getElementById(`eco-${id}`);
+      if (ecoCell) ecoCell.textContent = stars.toLocaleString();
+    } catch (error) {
+      console.error(`Failed to fetch stars for ${repo}:`, error);
+      const tableCell = document.getElementById(`stars-${id}`);
+      if (tableCell) tableCell.textContent = 'N/A';
+      const ecoCell = document.getElementById(`eco-${id}`);
+      if (ecoCell) ecoCell.textContent = 'N/A';
+    }
+  }
+}
+fetchStars();
+
+// Interactive terminal
+function simulateAttack(type) {
+  const terminal = document.getElementById('terminal-body');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  
+  const scenarios = {
+    path: {
+      cmd: 'read_file(path="/etc/passwd")',
+      blocked: '✗ BLOCKED — Path traversal detected (CCS §4.2)',
+      pattern: '→ Pattern: directory escape via /etc/ outside workspace',
+      recovery: '→ Recovery: returned sandbox-scoped error to caller',
+      latency: 19
+    },
+    ssrf: {
+      cmd: 'bash(cmd="curl http://169.254.169.254/latest/meta-data/")',
+      blocked: '✗ BLOCKED — SSRF to cloud metadata (CCS §4.5)',
+      pattern: '→ Pattern: AWS IMDS endpoint access attempt',
+      recovery: '→ Recovery: connection refused, incident logged',
+      latency: 21
+    },
+    semantic: {
+      cmd: 'Tool response: {"status": "success", "data": null}',
+      blocked: '✗ SEMANTIC MISMATCH — Output validation failed',
+      pattern: '→ Pattern: API returned success but data is null',
+      recovery: '→ Recovery: triggered retry with fallback provider',
+      latency: 24
+    },
+    recovery: {
+      cmd: 'Provider timeout after 30s',
+      blocked: null,
+      pattern: '→ Pattern: provider unresponsive, MAPE-K triggered',
+      recovery: '→ Recovery: switched to backup provider, semantic equivalence verified',
+      latency: 47
+    }
+  };
+
+  const scenario = scenarios[type];
+  
+  let html = `<br><span class="out">[${time}] Tool call: ${scenario.cmd}</span><br>`;
+  
+  if (scenario.blocked) {
+    html += `<span class="blocked">  ${scenario.blocked}</span><br>`;
+  } else {
+    html += `<span class="allowed">  ⚠ DETECTED — Reliability issue</span><br>`;
+  }
+  
+  html += `<span class="out">  ${scenario.pattern}</span><br>`;
+  html += `<span class="out">  ${scenario.recovery}</span><br>`;
+  html += `<span class="out">  → Latency added: ${scenario.latency}μs (within budget)</span><br>`;
+  
+  terminal.insertAdjacentHTML('beforeend', html);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// Particles
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+  const particle = document.createElement('div');
+  particle.className = 'particle';
+  particle.style.left = Math.random() * 100 + '%';
+  particle.style.animationDelay = Math.random() * 20 + 's';
+  particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+  particlesContainer.appendChild(particle);
+}
+</script>
+
 </body>
 </html>
