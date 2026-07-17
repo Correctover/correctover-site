@@ -2,631 +2,1110 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Correctover — The Reliability Layer for AI Agent Systems</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Correctover — The LLM Reliability Engineering Platform</title>
+<meta name="description" content="Correctover is the first LLM Reliability Engineering platform—self-healing, semantic validation, and drift detection for production AI. Not another gateway. The reliability layer your AI stack is missing.">
+<meta name="keywords" content="LLM reliability, self-healing, semantic validation, drift detection, AI failover, contract validation, MAPE-K, LLMRE">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0e17;--surface:#111827;--surface2:#1a2332;--border:#1e2d3d;--accent:#22d3ee;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--text:#e2e8f0;--text2:#94a3b8;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+:root {
+  --bg: #08080f;
+  --surface: #0d0d1a;
+  --surface2: #111122;
+  --surface3: #161630;
+  --border: #1a1a2e;
+  --border-light: #282848;
+  --text: #e8e8f0;
+  --muted: #606080;
+  --muted-light: #8080a0;
+  --cyan: #00d4b0;
+  --cyan-dim: rgba(0,212,176,0.08);
+  --cyan-glow: rgba(0,212,176,0.15);
+  --indigo: #5555dd;
+  --red: #ff4466;
+  --red-dim: rgba(255,68,102,0.08);
+  --amber: #ffaa33;
+  --amber-dim: rgba(255,170,51,0.1);
+  --green: #00d4b0;
+  --radius: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.lang-zh, .lang-en { display: none; }
+body.en .lang-en { display: inline; }
+body.en .lang-en-block { display: block; }
+body.zh .lang-zh { display: inline; }
+body.zh .lang-zh-block { display: block; }
 
-/* Particles background */
-.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
-.particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:.3;animation:float 20s infinite}
-@keyframes float{0%,100%{transform:translateY(0) translateX(0);opacity:0}50%{transform:translateY(-100vh) translateX(50px);opacity:.5}}
+/* Header */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,15,0.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+nav {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+}
+.logo { font-weight: 700; font-size: 18px; color: var(--text); letter-spacing: -0.3px; }
+.logo em { font-style: normal; color: var(--cyan); }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
+.nav-links a:hover { color: var(--text); }
+.nav-links .btn-small {
+  padding: 6px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 600;
+  background: var(--cyan); color: #08080f; transition: opacity 0.15s;
+}
+.nav-links .btn-small:hover { opacity: 0.9; color: #08080f; }
+.lang-toggle {
+  background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+  padding: 4px 12px; border-radius: var(--radius); cursor: pointer; font-size: 13px;
+  font-family: inherit; transition: all 0.15s;
+}
+.lang-toggle:hover { border-color: var(--cyan); color: var(--text); }
 
-/* Nav */
-nav{position:fixed;top:0;width:100%;background:rgba(10,14,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100;padding:0 2rem}
-nav .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
-nav .logo{font-weight:700;font-size:1.1rem;color:#fff;display:flex;align-items:center;gap:8px}
-nav .logo span{background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-nav .links{display:flex;gap:1.5rem;font-size:.875rem}
-nav .links a{color:var(--text2);transition:color .2s}
-nav .links a:hover{color:#fff}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 100px 0; }
+h2 { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; line-height: 1.2; }
+h2 .highlight { color: var(--cyan); }
+h3 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+p { color: var(--muted); font-size: 16px; max-width: 640px; margin-bottom: 16px; }
+p.large { font-size: 18px; max-width: 700px; }
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-/* Hero */
-.hero{padding:8rem 2rem 4rem;max-width:1200px;margin:0 auto;text-align:center;position:relative}
-.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;margin-bottom:1.5rem}
-.hero h1 .hl{background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.typewriter{display:inline-block;border-right:3px solid var(--accent);animation:blink 1s infinite;white-space:nowrap;overflow:hidden}
-@keyframes blink{0%,100%{border-color:var(--accent)}50%{border-color:transparent}}
-.hero .sub{font-size:1.15rem;color:var(--text2);max-width:700px;margin:0 auto 2.5rem;opacity:0;animation:fadeIn 1s 2s forwards}
-@keyframes fadeIn{to{opacity:1}}
-.hero .cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeIn 1s 2.5s forwards}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:.7rem 1.5rem;border-radius:8px;font-weight:600;font-size:.9rem;transition:all .3s}
-.btn-primary{background:var(--accent);color:#000;box-shadow:0 0 20px rgba(34,211,238,.2)}
-.btn-primary:hover{background:#67e8f9;text-decoration:none;box-shadow:0 0 30px rgba(34,211,238,.4);transform:translateY(-2px)}
-.btn-secondary{border:1px solid var(--border);color:var(--text);transition:all .3s}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);text-decoration:none;transform:translateY(-2px)}
+.section-label {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--muted); margin-bottom: 12px; font-weight: 600;
+}
+.section-label .accent { color: var(--cyan); }
 
-/* Stats bar */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:800px;margin:3rem auto 0;transition:box-shadow .3s}
-.stats-bar:hover{box-shadow:0 0 40px rgba(34,211,238,.1)}
-.stat{background:var(--surface);padding:1.2rem;text-align:center;transition:background .3s}
-.stat:hover{background:var(--surface2)}
-.stat .num{font-size:1.5rem;font-weight:800;color:#fff;font-family:var(--mono)}
-.stat .label{font-size:.75rem;color:var(--text2);margin-top:4px}
-.verified-badge{display:inline-block;background:var(--green);color:#000;font-size:.6rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px}
+/* ===== HERO ===== */
+.hero {
+  padding: 150px 0 80px; border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; opacity: 0.2; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 8s linear infinite;
+}
+@keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
 
-/* Section */
-section{padding:5rem 2rem;max-width:1200px;margin:0 auto}
-section h2{font-size:2rem;font-weight:700;text-align:center;margin-bottom:.5rem}
-section .section-sub{text-align:center;color:var(--text2);margin-bottom:3rem;font-size:1rem}
+.hero .brand-tag {
+  display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 24px;
+  padding: 6px 14px; border: 1px solid var(--cyan-dim); border-radius: 20px;
+  background: var(--cyan-dim); position: relative; z-index: 1;
+}
+.hero h1 {
+  font-size: clamp(36px, 5vw, 60px); font-weight: 800; letter-spacing: -1.5px;
+  line-height: 1.1; margin-bottom: 20px; max-width: 850px; position: relative; z-index: 1;
+}
+.hero .subtitle {
+  font-size: 18px; color: var(--muted); max-width: 650px; margin-bottom: 32px; line-height: 1.7;
+  position: relative; z-index: 1;
+}
+.hero .subtitle strong { color: var(--text); font-weight: 500; }
 
-/* What is reliability layer */
-.reliability-card{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(129,140,248,.08));border:1px solid var(--accent);border-radius:16px;padding:2.5rem;max-width:900px;margin:2rem auto;transition:transform .3s,box-shadow .3s}
-.reliability-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(34,211,238,.15)}
-.reliability-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:#fff}
-.reliability-card p{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1rem}
-.reliability-card .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2rem}
-.pillar{text-align:center}
-.pillar .icon{font-size:2rem;margin-bottom:.5rem}
-.pillar h4{font-size:1rem;font-weight:600;margin-bottom:.5rem;color:#fff}
-.pillar p{font-size:.85rem;color:var(--text2);line-height:1.5}
+.hero-actions {
+  display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  position: relative; z-index: 1; margin-bottom: 48px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+  text-decoration: none; cursor: pointer; border: none; font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-primary {
+  background: var(--cyan); color: #08080f;
+}
+.btn-primary:hover { opacity: 0.9; text-decoration: none; }
+.btn-outline {
+  background: transparent; color: var(--text); border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--cyan); color: var(--cyan); text-decoration: none; }
+.btn-outline .arrow { transition: transform 0.15s; }
+.btn-outline:hover .arrow { transform: translateX(4px); }
 
-/* Terminal */
-.terminal{background:#0d1117;border:1px solid #30363d;border-radius:12px;overflow:hidden;max-width:800px;margin:0 auto;transition:transform .3s,box-shadow .3s;position:relative}
-.terminal:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.terminal .bar{background:#161b22;padding:10px 16px;display:flex;align-items:center;gap:8px}
-.terminal .dot{width:12px;height:12px;border-radius:50%}
-.terminal .dot.r{background:#ff5f57}.terminal .dot.y{background:#febc2e}.terminal .dot.g{background:#28c840}
-.terminal .bar span{margin-left:12px;font-size:.8rem;color:var(--text2);font-family:var(--mono)}
-.terminal-body{padding:1.2rem;font-family:var(--mono);font-size:.82rem;line-height:1.8;overflow-x:auto;min-height:300px}
-.terminal-body .prompt{color:var(--green)}
-.terminal-body .cmd{color:#fff}
-.terminal-body .out{color:var(--text2)}
-.terminal-body .blocked{color:var(--red);font-weight:700}
-.terminal-body .allowed{color:var(--green)}
-.terminal-body .hl-cyan{color:var(--accent)}
-.terminal-btn{background:var(--accent);color:#000;border:none;padding:6px 16px;border-radius:4px;font-family:var(--mono);font-size:.75rem;cursor:pointer;margin-top:1rem;font-weight:600;transition:all .2s}
-.terminal-btn:hover{background:#67e8f9;transform:translateY(-1px)}
+/* Hero comparison visual */
+.hero-compare {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px;
+  align-items: center; max-width: 100%; margin-bottom: 40px;
+  position: relative; z-index: 1;
+}
+.hero-compare .side {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 16px 20px; min-height: 100px;
+}
+.hero-compare .side.bad { border-color: rgba(255,68,102,0.3); }
+.hero-compare .side.good { border-color: rgba(0,212,176,0.3); }
+.hero-compare .side-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;
+}
+.hero-compare .side.bad .side-label { color: var(--red); }
+.hero-compare .side.good .side-label { color: var(--cyan); }
+.hero-compare .shield {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--cyan-dim); border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.hero-compare .log-line {
+  font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+  font-size: 12px; line-height: 1.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hero-compare .log-line .bad { color: var(--red); }
+.hero-compare .log-line .good { color: var(--green); }
+.hero-compare .log-line .dim { color: var(--muted); }
 
-/* Code snippet */
-.code-block{background:#0d1117;border:1px solid #30363d;border-radius:12px;overflow:hidden;max-width:700px;margin:1.5rem auto;transition:transform .3s,box-shadow .3s}
-.code-block:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.code-block .header{background:#161b22;padding:8px 16px;font-size:.75rem;color:var(--text2);font-family:var(--mono);display:flex;justify-content:space-between}
-.code-block pre{padding:1.2rem;font-family:var(--mono);font-size:.82rem;line-height:1.7;overflow-x:auto;color:#e6edf3}
-.code-block .kw{color:#ff7b72}
-.code-block .fn{color:#d2a8ff}
-.code-block .str{color:#a5d6ff}
-.code-block .cm{color:#8b949e}
-.code-block .num{color:#79c0ff}
+@media (max-width: 720px) {
+  .hero-compare { grid-template-columns: 1fr; }
+  .hero-compare .shield { width: 100%; border-radius: var(--radius-lg); }
+}
 
-/* Attack surface grid */
-.attacks{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
-.attack-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all .3s;cursor:default}
-.attack-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 10px 40px rgba(34,211,238,.1)}
-.attack-card .icon{font-size:1.5rem;margin-bottom:.8rem}
-.attack-card h3{font-size:1rem;font-weight:600;margin-bottom:.5rem}
-.attack-card p{font-size:.85rem;color:var(--text2);line-height:1.6}
-.attack-card .tag{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:4px;margin-top:.8rem;font-weight:600}
-.tag-ccs{background:rgba(34,211,238,.15);color:var(--accent)}
-.tag-cve{background:rgba(239,68,68,.15);color:var(--red)}
-.tag-real{background:rgba(16,185,129,.15);color:var(--green)}
+/* Value pillars */
+.value-row {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; position: relative; z-index: 1;
+}
+.value-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 20px;
+  padding: 8px 18px; font-size: 14px; color: var(--text);
+}
+.value-pill .icon { font-size: 16px; }
 
-/* Data table */
-.data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:2rem 0}
-.data-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
-.data-table td{padding:10px 14px;border-bottom:1px solid var(--border);transition:background .2s}
-.data-table tr:hover td{background:rgba(34,211,238,.05)}
-.data-table .num-cell{font-family:var(--mono);font-weight:600}
-.data-table .pass{color:var(--green);font-weight:700}
-.data-table .fail{color:var(--red);font-weight:700}
-.data-table .warn{color:var(--yellow);font-weight:700}
+/* Simulator (preserved) */
+.simulator {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 0; overflow: hidden; max-width: 700px; position: relative; z-index: 1;
+}
+.sim-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 18px; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.sim-dot { width: 10px; height: 10px; border-radius: 50%; }
+.sim-dot.r { background: #ff5f56; }
+.sim-dot.y { background: #ffbd2e; }
+.sim-dot.g { background: #27c93f; }
+.sim-title { font-size: 12px; color: var(--muted); font-family: "SF Mono", monospace; }
+.sim-body { padding: 20px; min-height: 180px; position: relative; }
+.sim-log { font-family: "SF Mono", Monaco, monospace; font-size: 13px; line-height: 1.8; }
+.sim-log .line { opacity: 0; animation: fadeInLine 0.3s forwards; }
+@keyframes fadeInLine { to { opacity: 1; } }
+.sim-log .dim { color: var(--muted); }
+.sim-log .ok { color: var(--green); }
+.sim-log .fail { color: var(--red); }
+.sim-log .info { color: var(--cyan); }
+.sim-actions {
+  display: flex; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.sim-btn {
+  padding: 8px 16px; border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text); cursor: pointer; font-size: 13px;
+  font-family: inherit; transition: all 0.15s;
+}
+.sim-btn:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+.sim-btn.danger:hover { border-color: var(--red); background: var(--red-dim); }
+.sim-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* CCS Card */
-.ccs-card{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(129,140,248,.08));border:1px solid var(--accent);border-radius:16px;padding:2.5rem;max-width:900px;margin:2rem auto;text-align:center;transition:transform .3s,box-shadow .3s}
-.ccs-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(34,211,238,.15)}
-.ccs-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:#fff}
-.ccs-card p{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1.5rem}
-.ccs-card .ccs-stats{display:flex;justify-content:center;gap:3rem;margin-top:1.5rem;flex-wrap:wrap}
-.ccs-card .ccs-stat{text-align:center}
-.ccs-card .ccs-stat .num{font-size:1.8rem;font-weight:800;color:var(--accent);font-family:var(--mono)}
-.ccs-card .ccs-stat .label{font-size:.8rem;color:var(--text2);margin-top:4px}
+.gateway-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;
+}
+.gateway-box {
+  border-radius: var(--radius-lg); padding: 16px; border: 1px solid var(--border);
+}
+.gateway-box h4 { font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.gateway-box.regular { background: rgba(255,68,102,0.06); border-color: rgba(255,68,102,0.25); }
+.gateway-box.regular h4 { color: var(--red); }
+.gateway-box.correctover { background: var(--cyan-dim); border-color: rgba(0,212,176,0.25); }
+.gateway-box.correctover h4 { color: var(--cyan); }
+.gateway-result {
+  font-family: "SF Mono", monospace; font-size: 13px; min-height: 28px; line-height: 28px;
+}
+.gateway-result .bad { color: var(--red); }
+.gateway-result .good { color: var(--green); }
 
-/* Audit service */
-.audit-card{background:var(--surface);border:2px solid var(--green);border-radius:16px;padding:2.5rem;max-width:800px;margin:2rem auto;text-align:center;transition:transform .3s,box-shadow .3s}
-.audit-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(16,185,129,.2)}
-.audit-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:var(--green)}
-.audit-card p{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1.5rem}
-.audit-card .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0;text-align:left}
-.feature{display:flex;align-items:start;gap:.5rem}
-.feature .check{color:var(--green);font-size:1.2rem;flex-shrink:0}
-.feature p{font-size:.85rem;color:var(--text2);line-height:1.5}
+/* ===== SECTION: THE PROBLEM ===== */
+.problem-content {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;
+  margin-top: 40px;
+}
+.problem-list { list-style: none; padding: 0; }
+.problem-list li {
+  padding: 16px 0; border-top: 1px solid var(--border);
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.problem-list li:last-child { border-bottom: 1px solid var(--border); }
+.problem-list .icon { font-size: 18px; margin-top: 2px; flex-shrink: 0; }
+.problem-list h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.problem-list p { font-size: 13px; margin-bottom: 0; }
+.problem-conclusion {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px; font-size: 16px; line-height: 1.7; margin-top: 20px;
+}
+.problem-conclusion strong { color: var(--cyan); }
 
-/* Ecosystem */
-.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
-.eco-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center;transition:all .3s;cursor:default}
-.eco-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
-.eco-card .eco-name{font-weight:600;font-size:.9rem;color:#fff}
-.eco-card .eco-stars{font-size:.75rem;color:var(--text2);margin-top:4px;font-family:var(--mono)}
-.eco-card .eco-issues{font-size:.7rem;color:var(--red);margin-top:2px}
+@media (max-width: 720px) {
+  .problem-content { grid-template-columns: 1fr; gap: 30px; }
+}
 
-/* Positioning */
-.pos-table{width:100%;border-collapse:collapse;font-size:.85rem}
-.pos-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
-.pos-table td{padding:10px 14px;border-bottom:1px solid var(--border);transition:background .2s}
-.pos-table tr:hover td{background:rgba(34,211,238,.03)}
-.pos-table .check{color:var(--green);font-weight:700}
-.pos-table .cross{color:var(--red);font-weight:700}
-.pos-table .self{background:rgba(34,211,238,.04)}
+/* ===== SECTION: THREE CORE ENGINES ===== */
+.engines-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
+  margin-top: 40px; position: relative;
+}
+.engine-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 32px 28px; position: relative;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.engine-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+.engine-card .icon-badge {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 16px;
+}
+.engine-card:nth-child(1) .icon-badge { background: var(--cyan-dim); }
+.engine-card:nth-child(2) .icon-badge { background: var(--indigo); opacity: 0.15; }
+.engine-card:nth-child(3) .icon-badge { background: var(--amber-dim); }
+.engine-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.engine-card .tagline { font-size: 13px; color: var(--cyan); font-weight: 500; margin-bottom: 14px; }
+.engine-card p { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.7; }
+.engine-card ul { list-style: none; padding: 0; }
+.engine-card ul li {
+  font-size: 13px; color: var(--muted); padding: 4px 0;
+  padding-left: 16px; position: relative;
+}
+.engine-card ul li::before {
+  content: "→"; position: absolute; left: 0; color: var(--cyan);
+}
 
-/* CTA bottom */
-.cta-bottom{text-align:center;padding:5rem 2rem;background:linear-gradient(180deg,transparent,rgba(34,211,238,.04))}
-.cta-bottom h2{font-size:2rem;font-weight:700;margin-bottom:1rem}
-.cta-bottom p{color:var(--text2);margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto}
+/* Engine loop connector */
+.engine-connector {
+  display: none;
+}
+@media (min-width: 900px) {
+  .engines-grid {
+    padding-bottom: 60px;
+    background-image:
+      linear-gradient(90deg, transparent 16%, var(--border) 16%, var(--border) 17%, transparent 17%,
+                      transparent 49%, var(--border) 49%, var(--border) 50%, transparent 50%,
+                      transparent 82%, var(--border) 82%, var(--border) 83%, transparent 83%);
+  }
+  .engine-loop-label {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 8px 20px; font-size: 12px; color: var(--muted); white-space: nowrap;
+  }
+  .engine-loop-label .arrow-wrap { display: inline-flex; gap: 4px; margin: 0 8px; }
+  .engine-loop-label .arrow-wrap span { color: var(--cyan); }
+}
 
-/* Footer */
-footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:.8rem;color:var(--text2)}
-footer a{color:var(--text2);transition:color .2s}
-footer a:hover{color:var(--accent)}
+@media (max-width: 900px) {
+  .engines-grid { grid-template-columns: 1fr; }
+}
 
-/* Source tag */
-.source{font-size:.7rem;color:var(--text2);font-style:italic;margin-top:.5rem}
+/* ===== SECTION: FULL STACK ===== */
+.stack-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px;
+}
+.stack-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px; display: flex; gap: 16px; align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.stack-card:hover { border-color: var(--border-light); }
+.stack-card .icon {
+  font-size: 22px; flex-shrink: 0; width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface2); border-radius: 10px;
+}
+.stack-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.stack-card p { font-size: 13px; color: var(--muted); margin-bottom: 0; line-height: 1.6; }
+.stack-card .tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.stack-card .tags span {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--muted-light);
+}
 
-/* Loading spinner */
-.spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--text2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-left:8px}
-@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width: 700px) {
+  .stack-grid { grid-template-columns: 1fr; }
+}
 
-/* Responsive */
-@media(max-width:768px){
-.stats-bar{grid-template-columns:repeat(2,1fr)}
-.attacks{grid-template-columns:1fr}
-.eco-grid{grid-template-columns:repeat(2,1fr)}
-nav .links{display:none}
-.ccs-card .ccs-stats,.reliability-card .pillars,.audit-card .features{gap:1.5rem}
+/* ===== SECTION: COMPARISON ===== */
+.compare-table-wrap {
+  overflow-x: auto; margin-top: 40px;
+}
+.compare-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  font-size: 14px;
+}
+.compare-table th {
+  padding: 14px 20px; text-align: left; font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.compare-table th:first-child { color: var(--muted); font-weight: 500; }
+.compare-table th:nth-child(2) { color: var(--muted); }
+.compare-table th:nth-child(3) { color: var(--muted); }
+.compare-table th:last-child { color: var(--cyan); }
+.compare-table td {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  color: var(--muted);
+}
+.compare-table td:first-child { color: var(--text); font-weight: 500; }
+.compare-table .check { color: var(--green); font-weight: 700; }
+.compare-table .cross { color: var(--red); opacity: 0.6; }
+
+.compare-tagline {
+  margin-top: 40px; padding: 24px 32px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  font-size: 18px; font-weight: 600; text-align: center; line-height: 1.6;
+}
+.compare-tagline .highlight { color: var(--cyan); }
+.compare-tagline .dim { color: var(--muted); font-weight: 400; }
+.compare-tagline .sep { color: var(--muted-light); font-weight: 400; }
+
+@media (max-width: 600px) {
+  .compare-table th, .compare-table td { padding: 10px 12px; font-size: 13px; }
+  .compare-tagline { font-size: 15px; padding: 20px; }
+}
+
+/* ===== SECTION: PROOF ===== */
+.metrics-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 40px;
+}
+.metric-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px 20px; text-align: center; transition: border-color 0.2s;
+}
+.metric-card:hover { border-color: var(--border-light); }
+.metric-card .icon { font-size: 20px; margin-bottom: 12px; }
+.metric-card .value {
+  font-size: 32px; font-weight: 750; color: var(--cyan);
+  letter-spacing: -0.5px; line-height: 1; margin-bottom: 6px;
+}
+.metric-card .value small { font-size: 14px; font-weight: 400; color: var(--muted); }
+.metric-card .label { font-size: 13px; color: var(--muted); }
+.metric-card .sub { font-size: 11px; color: var(--muted); margin-top: 8px; opacity: 0.6; }
+
+/* ===== SECTION: AUDIENCE ===== */
+.audience-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 40px;
+}
+.audience-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 32px 28px; transition: border-color 0.2s;
+}
+.audience-card:hover { border-color: var(--border-light); }
+.audience-card .who { font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+.audience-card h3 { font-size: 17px; margin-bottom: 12px; }
+.audience-card p { font-size: 14px; color: var(--muted); margin-bottom: 0; line-height: 1.7; }
+.audience-card .tag {
+  display: inline-block; margin-top: 16px;
+  font-size: 12px; padding: 4px 12px; border-radius: 12px;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--muted-light);
+}
+
+@media (max-width: 800px) {
+  .audience-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface3) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 60px 40px; text-align: center;
+}
+.cta-section h2 { max-width: 600px; margin: 0 auto 16px; }
+.cta-section p { max-width: 500px; margin: 0 auto 32px; }
+.cta-grid {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+.cta-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 24px; min-width: 200px; text-align: left; cursor: pointer;
+  transition: border-color 0.2s; text-decoration: none; display: block;
+}
+.cta-card:hover { border-color: var(--cyan); text-decoration: none; }
+.cta-card .title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.cta-card .desc { font-size: 12px; color: var(--muted); margin-bottom: 0; }
+
+/* ===== FOOTER ===== */
+footer { border-top: 1px solid var(--border); padding: 48px 0 24px; }
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 32px; }
+.footer-col h5 {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); margin-bottom: 16px; font-weight: 600;
+}
+.footer-col a { display: block; font-size: 14px; color: var(--muted); padding: 4px 0; }
+.footer-col a:hover { color: var(--text); }
+.footer-bottom {
+  margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+  font-size: 13px; color: var(--muted);
+}
+
+/* Reveal animation */
+.reveal { opacity: 0; transform: translateY(24px); transition: all 0.6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 700px) {
+  section { padding: 60px 0; }
+  h2 { font-size: 26px; }
+  .hero { padding: 120px 0 40px; }
+  .nav-links { gap: 12px; }
+  .nav-links .btn-small { display: none; }
 }
 </style>
 </head>
-<body>
-
-<!-- Particles background -->
-<div class="particles" id="particles"></div>
-
-<nav>
-<div class="inner">
-<div class="logo">
-<span>Correctover</span>
-<span style="font-weight:400;color:var(--text2);font-size:.85rem">Reliability Layer for AI</span>
-</div>
-<div class="links">
-<a href="#reliability">What is Reliability Layer</a>
-<a href="#security">Security</a>
-<a href="#audit">Audit Service</a>
-<a href="#data">Data</a>
-<a href="https://zenodo.org/records/21405206" target="_blank">CCS Standard</a>
-<a href="https://pypi.org/project/correctover/" target="_blank">PyPI</a>
-</div>
-</div>
-</nav>
-
-<!-- Hero -->
-<div class="hero">
-<h1>The <span class="hl"><span id="typewriter" class="typewriter"></span></span><br>for AI Agent Systems</h1>
-<p class="sub">Correctover ensures your AI agents don't fail in production. Semantic equivalence verification + auto-recovery + runtime security — not just failover, but guaranteed correctness.</p>
-<div class="cta">
-<a class="btn btn-primary" href="https://pypi.org/project/correctover/">pip install correctover</a>
-<a class="btn btn-secondary" href="#audit">Request Security Audit →</a>
-</div>
-
-<div class="stats-bar">
-<div class="stat"><div class="num"><span id="stat-vuln">0</span></div><div class="label">Verified Vulnerabilities <span class="verified-badge">VERIFIED</span></div></div>
-<div class="stat"><div class="num"><span id="stat-latency">0</span>μs</div><div class="label">P50 Latency Overhead</div></div>
-<div class="stat"><div class="num"><span id="stat-recovery">0</span>%</div><div class="label">Auto-Recovery Rate</div></div>
-<div class="stat"><div class="num"><span id="stat-trace">0</span>K</div><div class="label">API Trace Dataset <span class="verified-badge">VERIFIED</span></div></div>
-</div>
-<p class="source" style="margin-top:1rem">All data verified and reproducible. See <a href="https://zenodo.org/records/21405206">Zenodo DOI: 10.5281/zenodo.21405206</a> for methodology and raw data.</p>
-</div>
-
-<!-- What is Reliability Layer -->
-<section id="reliability">
-<h2>What is the Reliability Layer?</h2>
-<p class="section-sub">Not a gateway. Not a router. Not infrastructure. It's the guarantee that your AI system works correctly.</p>
-
-<div class="reliability-card">
-<h3>Beyond Failover: Semantic Equivalence Verification</h3>
-<p>Traditional failover just retries when something breaks. Correctover verifies that the output is <strong>semantically equivalent</strong> to what was expected — using AST validation, behavioral equivalence checks, and 6-dimensional verification. When a failure is detected, MAPE-K control loop auto-recovers with 97.4% success rate.</p>
-<div class="pillars">
-<div class="pillar">
-<div class="icon">🔍</div>
-<h4>Semantic Verification</h4>
-<p>AST + regex dual validation ensures output correctness, not just API success</p>
-</div>
-<div class="pillar">
-<div class="icon">🔄</div>
-<h4>MAPE-K Auto-Recovery</h4>
-<p>Monitor-Analyze-Plan-Execute control loop with 97.4% recovery rate</p>
-</div>
-<div class="pillar">
-<div class="icon">⚡</div>
-<h4>22μs P50 Overhead</h4>
-<p>Sub-millisecond verification — no performance penalty for reliability</p>
-</div>
-<div class="pillar">
-<div class="icon">📊</div>
-<h4>20K Verified Traces</h4>
-<p>Real API call data across 4 providers, publicly reproducible</p>
-</div>
-</div>
-</div>
-</section>
-
-<!-- Live Demo Terminal -->
-<section id="security">
-<h2>See Reliability + Security In Action</h2>
-<p class="section-sub">Interactive demo — verify semantic equivalence and intercept security threats</p>
-
-<div class="terminal">
-<div class="bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>correctover — reliability + security monitor</span></div>
-<div class="terminal-body" id="terminal-body">
-<span class="prompt">$</span> <span class="cmd">correctover scan --live</span><br>
-<span class="out">[14:32:01] Monitoring MCP server: filesystem@v2.1.0</span><br>
-<span class="out">[14:32:01] Policy: CCS-compliant | Latency budget: 22μs P50</span><br>
-<span class="out">[14:32:01] Ready. Click a button below to simulate scenarios:</span><br><br>
-<div style="display:flex;gap:.5rem;flex-wrap:wrap">
-<button class="terminal-btn" onclick="simulateAttack('path')">Path Traversal</button>
-<button class="terminal-btn" onclick="simulateAttack('ssrf')">SSRF Attack</button>
-<button class="terminal-btn" onclick="simulateAttack('semantic')">Semantic Mismatch</button>
-<button class="terminal-btn" onclick="simulateAttack('recovery')">Auto-Recovery</button>
-</div>
-</div>
-</div>
-</section>
-
-<!-- CCS Standard -->
-<section>
-<h2>CCS — Conformance Standard for MCP Security</h2>
-<p class="section-sub">The open industry standard defining runtime security requirements</p>
-
-<div class="ccs-card">
-<h3>CCS v1.0 Specification</h3>
-<p>CCS defines 24 verification rules across AST + regex dual validation, covering input validation, output validation, fault handling, and supply chain security. Published with DOI for academic rigor and reproducibility.</p>
-<a class="btn btn-secondary" href="https://zenodo.org/records/21405206" style="margin-top:1rem">Read CCS Specification →</a>
-<div class="ccs-stats">
-<div class="ccs-stat"><div class="num">24</div><div class="label">Verification Rules</div></div>
-<div class="ccs-stat"><div class="num">AST+Regex</div><div class="label">Dual Validation</div></div>
-<div class="ccs-stat"><div class="num">DOI</div><div class="label">Academic Rigor</div></div>
-</div>
-</div>
-</section>
-
-<!-- Audit Service -->
-<section id="audit">
-<h2>Security Audit Service</h2>
-<p class="section-sub">Professional security audit for your AI Agent / MCP deployment</p>
-
-<div class="audit-card">
-<h3>🛡️ AI Agent & MCP Security Audit</h3>
-<p>We've discovered 506+ vulnerabilities across 10 major frameworks. Let us audit your deployment and ensure production-grade security.</p>
-
-<div class="features">
-<div class="feature">
-<span class="check">✓</span>
-<p>Comprehensive MCP security assessment using CCS standard</p>
-</div>
-<div class="feature">
-<span class="check">✓</span>
-<p>Command injection, SSRF, path traversal, credential leakage testing</p>
-</div>
-<div class="feature">
-<span class="check">✓</span>
-<p>Supply chain security: hook/plugin validation</p>
-</div>
-<div class="feature">
-<span class="check">✓</span>
-<p>Detailed vulnerability report with remediation guidance</p>
-</div>
-<div class="feature">
-<span class="check">✓</span>
-<p>Compliance mapping: OWASP MCP Top 10, EU AI Act readiness</p>
-</div>
-<div class="feature">
-<span class="check">✓</span>
-<p>Track record: LiteLLM, Docker MCP, AutoGen, AgentScope vulnerabilities disclosed</p>
-</div>
-</div>
-
-<a class="btn btn-primary" href="mailto:wangguigui@correctover.com?subject=Security%20Audit%20Inquiry" style="margin-top:1.5rem">Request Audit →</a>
-<p class="source" style="margin-top:1rem">Audit reports available under NDA. Public disclosures follow responsible disclosure policy.</p>
-</div>
-</section>
-
-<!-- Attack Surfaces -->
-<section>
-<h2>6 Attack Surfaces We Cover</h2>
-<p class="section-sub">Real vulnerability data from production MCP deployments</p>
-
-<div class="attacks">
-<div class="attack-card">
-<div class="icon">🔓</div>
-<h3>Command Injection</h3>
-<p>Malicious tool arguments that escape shell context. 127+ variants across bash, shell_exec, and subprocess calls.</p>
-<span class="tag tag-cve">CCS §4.1</span> <span class="tag tag-real">127 cases</span>
-</div>
-<div class="attack-card">
-<div class="icon">🌐</div>
-<h3>SSRF & Cloud Credential Theft</h3>
-<p>HTTP requests to internal services or cloud metadata endpoints (169.254.169.254). Blocks IMDSv1/v2 hijacking.</p>
-<span class="tag tag-cve">CCS §4.5</span> <span class="tag tag-real">89 cases</span>
-</div>
-<div class="attack-card">
-<div class="icon">📁</div>
-<h3>Path Traversal</h3>
-<p>File operations escaping workspace via ../, symlinks, or encoded paths. Protects /etc/passwd and .env reads.</p>
-<span class="tag tag-cve">CCS §4.2</span> <span class="tag tag-real">94 cases</span>
-</div>
-<div class="attack-card">
-<div class="icon">🔑</div>
-<h3>Credential Leakage</h3>
-<p>Tool responses containing API keys or secrets passed to LLM context. Output validation catches what input filters miss.</p>
-<span class="tag tag-cve">CCS §4.6</span> <span class="tag tag-real">68 cases</span>
-</div>
-<div class="attack-card">
-<div class="icon">⚡</div>
-<h3>Fail-Open Errors</h3>
-<p>When hooks crash, frameworks silently continue. We enforce fail-closed defaults — errors block, not bypass.</p>
-<span class="tag tag-cve">CCS §3.1</span> <span class="tag tag-real">Confirmed in Grok Build</span>
-</div>
-<div class="attack-card">
-<div class="icon">🔄</div>
-<h3>Hook Supply Chain</h3>
-<p>Dynamic hook loading from untrusted paths, unvalidated URLs. We verify provenance and enforce HTTPS-only.</p>
-<span class="tag tag-cve">CCS §4.7</span> <span class="tag tag-real">128 cases</span>
-</div>
-</div>
-</section>
-
-<!-- Data Table -->
-<section id="data">
-<h2>10 Frameworks Audited. 506 Vulnerabilities Found.</h2>
-<p class="section-sub">Real scan data from production MCP frameworks</p>
-
-<table class="data-table">
-<thead>
-<tr><th>Framework</th><th>Stars <span style="font-size:.7rem;color:var(--green)">LIVE</span></th><th>MCP Issues</th><th>Security Issues</th><th>Sec/MCP Ratio</th></tr>
-</thead>
-<tbody>
-<tr><td>CrewAI</td><td class="num-cell" id="stars-crewai">loading...</td><td class="num-cell">298</td><td class="num-cell fail">856</td><td class="num-cell">2.87x</td></tr>
-<tr><td>LlamaIndex</td><td class="num-cell" id="stars-llamaindex">loading...</td><td class="num-cell">200</td><td class="num-cell fail">856</td><td class="num-cell">4.28x</td></tr>
-<tr><td>AutoGen</td><td class="num-cell" id="stars-autogen">loading...</td><td class="num-cell">197</td><td class="num-cell fail">417</td><td class="num-cell">2.12x</td></tr>
-<tr><td>LangGraph</td><td class="num-cell" id="stars-langgraph">loading...</td><td class="num-cell">166</td><td class="num-cell warn">317</td><td class="num-cell">1.91x</td></tr>
-<tr><td>AstrBot</td><td class="num-cell" id="stars-astrbot">loading...</td><td class="num-cell">424</td><td class="num-cell fail">476</td><td class="num-cell">1.12x</td></tr>
-<tr><td>FastMCP</td><td class="num-cell" id="stars-fastmcp">loading...</td><td class="num-cell">2,349</td><td class="num-cell warn">271</td><td class="num-cell">0.12x</td></tr>
-<tr><td>AgentScope</td><td class="num-cell" id="stars-agentscope">loading...</td><td class="num-cell">160</td><td class="num-cell warn">62</td><td class="num-cell">0.39x</td></tr>
-<tr><td>CowAgent</td><td class="num-cell" id="stars-cowagent">loading...</td><td class="num-cell">16</td><td class="num-cell warn">78</td><td class="num-cell">4.88x</td></tr>
-<tr><td>MiniMax-MCP</td><td class="num-cell" id="stars-minimax">loading...</td><td class="num-cell">66</td><td class="num-cell">7</td><td class="num-cell">0.11x</td></tr>
-<tr><td>Coze-py</td><td class="num-cell" id="stars-coze">loading...</td><td class="num-cell">1</td><td class="num-cell">9</td><td class="num-cell">9.00x</td></tr>
-</tbody>
-</table>
-<p class="source">Data collected July 2026 via GitHub API. Stars fetched in real-time.</p>
-</section>
-
-<!-- OWASP Mapping -->
-<section>
-<h2>OWASP MCP Top 10 Coverage</h2>
-<p class="section-sub">How Correctover maps to OWASP MCP security categories</p>
-
-<table class="data-table">
-<thead>
-<tr><th>OWASP MCP Category</th><th>CCS Section</th><th>Coverage</th></tr>
-</thead>
-<tbody>
-<tr><td>MCP01: Tool Poisoning</td><td>CCS §4.1, §4.3</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP02: Malicious MCP Server</td><td>CCS §3.2, §4.7</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP03: Prompt Injection via Tools</td><td>CCS §4.4</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP04: Data Exfiltration</td><td>CCS §4.5, §4.6</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP05: SSRF</td><td>CCS §4.5</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP06: Path Traversal</td><td>CCS §4.2</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP07: Credential Theft</td><td>CCS §4.6</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP08: Supply Chain Attack</td><td>CCS §4.7</td><td class="warn">⚠ Partial</td></tr>
-<tr><td>MCP09: Authorization Bypass</td><td>CCS §3.1</td><td class="pass">✓ Covered</td></tr>
-<tr><td>MCP10: Denial of Service</td><td>CCS §5.1</td><td class="warn">⚠ Partial</td></tr>
-</tbody>
-</table>
-<p class="source">Based on OWASP LLM Top 10 MCP extension categories.</p>
-</section>
-
-<!-- Positioning -->
-<section id="positioning">
-<h2>How We Differ</h2>
-<p class="section-sub">Not a gateway, not infrastructure — the reliability guarantee</p>
-
-<table class="pos-table">
-<thead>
-<tr><th>Capability</th><th>Correctover</th><th>Gateways/Proxies</th><th>LLM Observability</th></tr>
-</thead>
-<tbody>
-<tr class="self"><td>Approach</td><td><strong>Semantic verification + auto-recovery</strong></td><td>Route + load balance</td><td>Monitor + log</td></tr>
-<tr class="self"><td>Correctness Guarantee</td><td class="check">✓ AST validation</td><td class="cross">✗ API success only</td><td class="cross">✗ Metrics only</td></tr>
-<tr class="self"><td>Auto-Recovery</td><td class="check">✓ 97.4% rate</td><td class="cross">✗ Manual failover</td><td class="cross">✗ Alert only</td></tr>
-<tr class="self"><td>Security Verification</td><td class="check">✓ Output validation</td><td>Input filtering</td><td class="cross">✗ None</td></tr>
-<tr class="self"><td>Standard Compliance</td><td class="check">✓ CCS (DOI)</td><td>Proprietary</td><td>Proprietary</td></tr>
-<tr class="self"><td>Reproducible Data</td><td class="check">✓ 20K traces</td><td>Claims only</td><td>Proprietary</td></tr>
-</tbody>
-</table>
-<p class="source" style="margin-top:1rem">Gateways: LiteLLM, Portkey, OpenRouter. Observability: LangSmith, Arize, Helicone.</p>
-</section>
-
-<!-- Ecosystem -->
-<section id="ecosystem">
-<h2>Frameworks We Monitor</h2>
-<p class="section-sub">Real-time security monitoring across the MCP ecosystem</p>
-
-<div class="eco-grid">
-<div class="eco-card"><div class="eco-name">FastMCP</div><div class="eco-stars">⭐ <span id="eco-fastmcp">...</span></div><div class="eco-issues">271 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">CrewAI</div><div class="eco-stars">⭐ <span id="eco-crewai">...</span></div><div class="eco-issues">856 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">LangGraph</div><div class="eco-stars">⭐ <span id="eco-langgraph">...</span></div><div class="eco-issues">317 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">LlamaIndex</div><div class="eco-stars">⭐ <span id="eco-llamaindex">...</span></div><div class="eco-issues">856 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">AutoGen</div><div class="eco-stars">⭐ <span id="eco-autogen">...</span></div><div class="eco-issues">417 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">AstrBot</div><div class="eco-stars">⭐ <span id="eco-astrbot">...</span></div><div class="eco-issues">476 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">AgentScope</div><div class="eco-stars">⭐ <span id="eco-agentscope">...</span></div><div class="eco-issues">62 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">CowAgent</div><div class="eco-stars">⭐ <span id="eco-cowagent">...</span></div><div class="eco-issues">78 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">MiniMax-MCP</div><div class="eco-stars">⭐ <span id="eco-minimax">...</span></div><div class="eco-issues">7 sec issues</div></div>
-<div class="eco-card"><div class="eco-name">Coze-py</div><div class="eco-stars">⭐ <span id="eco-coze">...</span></div><div class="eco-issues">9 sec issues</div></div>
-</div>
-<p class="source" style="margin-top:1.5rem;text-align:center">All data verified via GitHub API, July 2026</p>
-</section>
-
-<!-- CTA -->
-<div class="cta-bottom">
-<h2>Secure Your AI Agent Deployment</h2>
-<p>Correctover is open source under Apache 2.0. Professional security audit services available for production deployments.</p>
-<div class="cta" style="justify-content:center">
-<a class="btn btn-primary" href="https://pypi.org/project/correctover/">Get Started — pip install correctover</a>
-<a class="btn btn-secondary" href="mailto:wangguigui@correctover.com?subject=Security%20Audit%20Inquiry">Request Security Audit</a>
-</div>
-</div>
-
-<footer>
-<p>Correctover — The Reliability Layer for AI Agent Systems</p>
-<p style="margin-top:.5rem"><a href="https://github.com/Correctover">GitHub</a> · <a href="https://pypi.org/project/correctover/">PyPI</a> · <a href="https://www.npmjs.com/package/correctover">npm</a> · <a href="https://zenodo.org/records/21405206">CCS Standard (DOI: 10.5281/zenodo.21405206)</a></p>
-<p style="margin-top:1rem">© 2026 Correctover. Apache 2.0 License.</p>
-</footer>
+<body class="en">
 
 <script>
-// Typewriter effect
-const text = "Reliability Layer";
-const typewriter = document.getElementById('typewriter');
-let i = 0;
-function type() {
-  if (i < text.length) {
-    typewriter.textContent += text.charAt(i);
-    i++;
-    setTimeout(type, 80);
-  }
-}
-setTimeout(type, 500);
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('lang-toggle');
+  toggle.addEventListener('click', () => {
+    document.body.classList.toggle('en');
+    document.body.classList.toggle('zh');
+    toggle.textContent = document.body.classList.contains('zh') ? 'EN' : '中';
+  });
 
-// Counter animation
-function animateCounter(elementId, target, duration = 2000) {
-  const element = document.getElementById(elementId);
-  const start = 0;
-  const startTime = performance.now();
-  
-  function update(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const current = Math.floor(progress * (target - start) + start);
-    element.textContent = current.toLocaleString();
-    
-    if (progress < 1) {
-      requestAnimationFrame(update);
-    }
-  }
-  requestAnimationFrame(update);
-}
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => obs.observe(r));
+});
 
-// Start counters
-setTimeout(() => {
-  animateCounter('stat-vuln', 506);
-  animateCounter('stat-latency', 22, 1500);
-  animateCounter('stat-recovery', 97.4, 1800);
-  animateCounter('stat-trace', 20, 1200);
-}, 500);
-
-// Fetch real-time GitHub stars
-async function fetchStars() {
-  const repos = [
-    { id: 'crewai', repo: 'crewAIInc/crewAI' },
-    { id: 'llamaindex', repo: 'run-llama/llama_index' },
-    { id: 'autogen', repo: 'microsoft/autogen' },
-    { id: 'langgraph', repo: 'langchain-ai/langgraph' },
-    { id: 'astrbot', repo: 'AstrBotDevs/AstrBot' },
-    { id: 'fastmcp', repo: 'jlowin/fastmcp' },
-    { id: 'agentscope', repo: 'modelscope/agentscope' },
-    { id: 'cowagent', repo: 'cowAgent/cowagent' },
-    { id: 'minimax', repo: 'MiniMax-AI/MiniMax-MCP' },
-    { id: 'coze', repo: 'coze-dev/coze-py' }
+// ===== SIMULATOR =====
+function runSim() {
+  const log = document.getElementById('sim-log');
+  const regResult = document.getElementById('reg-result');
+  const coResult = document.getElementById('co-result');
+  if (!log) return;
+  const lines = [
+    { cls: 'dim', text: '> Correctover Self-Healing Engine v1.1.0 — 4-level recovery active' },
+    { cls: 'dim', text: '> Providers: openai (primary) · anthropic · deepseek (2 fallbacks)' },
+    { cls: 'dim', text: '> Monitoring for failures...' },
   ];
-
-  for (const { id, repo } of repos) {
-    try {
-      const response = await fetch(`https://api.github.com/repos/${repo}`);
-      const data = await response.json();
-      const stars = data.stargazers_count;
-      
-      const tableCell = document.getElementById(`stars-${id}`);
-      if (tableCell) tableCell.textContent = stars.toLocaleString();
-      
-      const ecoCell = document.getElementById(`eco-${id}`);
-      if (ecoCell) ecoCell.textContent = stars.toLocaleString();
-    } catch (error) {
-      console.error(`Failed to fetch stars for ${repo}:`, error);
-      const tableCell = document.getElementById(`stars-${id}`);
-      if (tableCell) tableCell.textContent = 'N/A';
-      const ecoCell = document.getElementById(`eco-${id}`);
-      if (ecoCell) ecoCell.textContent = 'N/A';
-    }
-  }
-}
-fetchStars();
-
-// Interactive terminal
-function simulateAttack(type) {
-  const terminal = document.getElementById('terminal-body');
-  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-  
-  const scenarios = {
-    path: {
-      cmd: 'read_file(path="/etc/passwd")',
-      blocked: '✗ BLOCKED — Path traversal detected (CCS §4.2)',
-      pattern: '→ Pattern: directory escape via /etc/ outside workspace',
-      recovery: '→ Recovery: returned sandbox-scoped error to caller',
-      latency: 19
-    },
-    ssrf: {
-      cmd: 'bash(cmd="curl http://169.254.169.254/latest/meta-data/")',
-      blocked: '✗ BLOCKED — SSRF to cloud metadata (CCS §4.5)',
-      pattern: '→ Pattern: AWS IMDS endpoint access attempt',
-      recovery: '→ Recovery: connection refused, incident logged',
-      latency: 21
-    },
-    semantic: {
-      cmd: 'Tool response: {"status": "success", "data": null}',
-      blocked: '✗ SEMANTIC MISMATCH — Output validation failed',
-      pattern: '→ Pattern: API returned success but data is null',
-      recovery: '→ Recovery: triggered retry with fallback provider',
-      latency: 24
-    },
-    recovery: {
-      cmd: 'Provider timeout after 30s',
-      blocked: null,
-      pattern: '→ Pattern: provider unresponsive, MAPE-K triggered',
-      recovery: '→ Recovery: switched to backup provider, semantic equivalence verified',
-      latency: 47
-    }
-  };
-
-  const scenario = scenarios[type];
-  
-  let html = `<br><span class="out">[${time}] Tool call: ${scenario.cmd}</span><br>`;
-  
-  if (scenario.blocked) {
-    html += `<span class="blocked">  ${scenario.blocked}</span><br>`;
-  } else {
-    html += `<span class="allowed">  ⚠ DETECTED — Reliability issue</span><br>`;
-  }
-  
-  html += `<span class="out">  ${scenario.pattern}</span><br>`;
-  html += `<span class="out">  ${scenario.recovery}</span><br>`;
-  html += `<span class="out">  → Latency added: ${scenario.latency}μs (within budget)</span><br>`;
-  
-  terminal.insertAdjacentHTML('beforeend', html);
-  terminal.scrollTop = terminal.scrollHeight;
+  let idx = 0;
+  const interval = setInterval(() => {
+    if (idx >= lines.length) { clearInterval(interval); return; }
+    const d = document.createElement('div');
+    d.className = 'line ' + lines[idx].cls;
+    d.textContent = lines[idx].text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    idx++;
+  }, 250);
 }
 
-// Particles
-const particlesContainer = document.getElementById('particles');
-for (let i = 0; i < 30; i++) {
-  const particle = document.createElement('div');
-  particle.className = 'particle';
-  particle.style.left = Math.random() * 100 + '%';
-  particle.style.animationDelay = Math.random() * 20 + 's';
-  particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-  particlesContainer.appendChild(particle);
+function failProvider() {
+  const log = document.getElementById('sim-log');
+  const regResult = document.getElementById('reg-result');
+  const coResult = document.getElementById('co-result');
+  const btn = document.getElementById('fail-btn');
+  if (!log) return;
+  btn.disabled = true;
+
+  const failLines = [
+    { cls: 'fail', text: '✗ Provider "openai" DOWN (HTTP 503)' },
+    { cls: 'dim', text: '  → Gateway: immediate failover to anthropic' },
+    { cls: 'ok', text: '  → Correctover: Level 1 — Retry... failed' },
+    { cls: 'ok', text: '  → Correctover: Level 2 — Degrade & route to anthropic' },
+    { cls: 'info', text: '     Starting 6-dim semantic validation on fallback...' },
+    { cls: 'info', text: '     1/6 ✓ Schema — response structure OK' },
+    { cls: 'info', text: '     2/6 ✗ Semantic equivalence — FAILED (drift detected)' },
+    { cls: 'info', text: '     3/6 ✓ Latency compliance — OK' },
+    { cls: 'info', text: '     4/6 ✓ Cost guardrails — within budget' },
+    { cls: 'info', text: '     5/6 ✓ Content integrity — complete' },
+    { cls: 'info', text: '     6/6 ✓ Identity verification — confirmed anthropic' },
+    { cls: 'info', text: '  → Contract VIOLATED (semantic inequality). Trying deepseek...' },
+    { cls: 'dim', text: '  → DeepSeek: 6/6 validations PASSED' },
+    { cls: 'ok', text: '✓ Correctover: returning verified response from deepseek' },
+    { cls: 'dim', text: '  → Level 3 — Failure recorded to flywheel learner' },
+  ];
+  regResult.innerHTML = '<span class="bad">✗ Failover to anthropic — HTTP 200<br><span style="font-size:12px;opacity:0.6">But semantic drift — wrong model, wrong answer.</span></span>';
+  coResult.innerHTML = '<span class="good">✓ Self-healing complete → anthropic rejected (semantic drift)<br>→ deepseek: 6/6 passed<br><span style="font-size:12px;opacity:0.6">Only verified response reaches your app. Failure logged to flywheel.</span></span>';
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i >= failLines.length) { clearInterval(interval); btn.disabled = false; return; }
+    const d = document.createElement('div');
+    d.className = 'line ' + failLines[i].cls;
+    d.textContent = failLines[i].text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    i++;
+  }, 220);
+}
+
+function resetSim() {
+  document.getElementById('sim-log').innerHTML = '';
+  document.getElementById('reg-result').innerHTML = '<span style="color:var(--muted)">Waiting for trigger...</span>';
+  document.getElementById('co-result').innerHTML = '<span style="color:var(--muted)">Waiting for trigger...</span>';
+  document.getElementById('fail-btn').disabled = false;
+  runSim();
 }
 </script>
 
+<header>
+<nav>
+  <div class="logo">correct<em>over</em></div>
+  <div class="nav-links">
+    <a href="#problem"><span class="lang-en">Why</span><span class="lang-zh">为什么</span></a>
+    <a href="#engines"><span class="lang-en">Platform</span><span class="lang-zh">平台能力</span></a>
+    <a href="#comparison"><span class="lang-en">Compare</span><span class="lang-zh">对比</span></a>
+    <a href="console.html"><span class="lang-en">Console</span><span class="lang-zh">控制台</span></a>
+    <a href="audit.html"><span class="lang-en">Audit</span><span class="lang-zh">审计</span></a>
+    <a href="https://github.com/Correctover/mcp-server" target="_blank">GitHub</a>
+    <a href="#cta" class="btn-small lang-en">Start Free Trial</a>
+    <a href="#cta" class="btn-small lang-zh">免费试用</a>
+    <button class="lang-toggle" id="lang-toggle">中</button>
+  </div>
+</nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="container" style="position:relative;z-index:1">
+
+  <div class="brand-tag lang-en">The LLM Reliability Engineering Platform</div>
+  <div class="brand-tag lang-zh">LLM 可靠性工程平台</div>
+
+  <h1 class="lang-en">Your LLM works in staging.<br>It fails in production.<span style="color:var(--cyan)"> We fix that.</span></h1>
+  <h1 class="lang-zh">你的 LLM 在 staging 表现完美。<br>一上线就故障。<span style="color:var(--cyan)"> 我们来修。</span></h1>
+
+  <p class="subtitle lang-en">Correctover is the first <strong>LLM Reliability Engineering</strong> platform—a complete engine for self-healing, semantic validation, and drift detection. Not another gateway. The reliability layer your AI stack is missing.</p>
+  <p class="subtitle lang-zh">Correctover 是第一个 <strong>LLM 可靠性工程</strong>平台——集自愈、语义验证、漂移检测于一体的完整引擎。不是又一个网关。是你的 AI 栈缺失的那层可靠性。</p>
+
+  <!-- Hero comparison visual -->
+  <div class="hero-compare">
+    <div class="side bad">
+      <div class="side-label lang-en">✗ Without Correctover</div>
+      <div class="side-label lang-zh">✗ 无 Correctover</div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:17]</span> <span class="bad">503 openai down</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:18]</span> Gateway → anthropic <span class="bad">(HTTP 200)</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:18]</span> <span class="bad">✗ Semantic drift — wrong answer delivered</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:19]</span> <span class="bad">✗ 10× cost overrun</span></div>
+    </div>
+    <div class="shield">
+      <span style="font-size:14px;font-weight:700;color:var(--cyan)">correct<br>over</span>
+    </div>
+    <div class="side good">
+      <div class="side-label lang-en">✓ With Correctover</div>
+      <div class="side-label lang-zh">✓ 有 Correctover</div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:17]</span> <span class="bad">503 openai down</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:17]</span> <span class="good">✓ Level 1 retry → failed</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:18]</span> <span class="good">✓ Level 2 — degrade to anthropic</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:18]</span> <span class="good">✓ 6-dim validation → deepseek</span></div>
+      <div class="log-line"><span style="color:var(--muted)">[03:42:19]</span> <span class="good">✓ Verified response delivered</span></div>
+    </div>
+  </div>
+
+  <div class="hero-actions">
+    <a href="#cta" class="btn btn-primary lang-en">Start Free Trial</a>
+    <a href="#cta" class="btn btn-primary lang-zh">免费试用</a>
+    <a href="#simulator" class="btn btn-outline lang-en">▶ See How It Works <span class="arrow">→</span></a>
+    <a href="#simulator" class="btn btn-outline lang-zh">▶ 看它如何工作 <span class="arrow">→</span></a>
+    <a href="https://github.com/Correctover/mcp-server" target="_blank" class="btn btn-outline">GitHub <span class="arrow">→</span></a>
+  </div>
+
+  <div class="value-row">
+    <span class="value-pill"><span class="icon">🛡️</span> Self-Healing</span>
+    <span class="value-pill"><span class="icon">✓</span> Semantic Validation</span>
+    <span class="value-pill"><span class="icon">📡</span> Drift Detection</span>
+    <span class="value-pill"><span class="icon">⚡</span> 22µs validation</span>
+    <span class="value-pill"><span class="icon">🔓</span> Apache 2.0</span>
+  </div>
+
+  <!-- Interactive Simulator -->
+  <div class="simulator" id="simulator">
+    <div class="sim-header">
+      <span class="sim-dot r"></span><span class="sim-dot y"></span><span class="sim-dot g"></span>
+      <span class="sim-title">correctover-self-healing-demo</span>
+    </div>
+    <div class="sim-body">
+      <div class="sim-log" id="sim-log" style="height:200px;overflow-y:auto"></div>
+      <div class="gateway-row">
+        <div class="gateway-box regular">
+          <h4 class="lang-en">✗ Without Correctover</h4>
+          <h4 class="lang-zh">✗ 无 Correctover</h4>
+          <div class="gateway-result" id="reg-result"><span style="color:var(--muted)">Waiting for trigger...</span></div>
+        </div>
+        <div class="gateway-box correctover">
+          <h4 class="lang-en">✓ With Correctover</h4>
+          <h4 class="lang-zh">✓ 有 Correctover</h4>
+          <div class="gateway-result" id="co-result"><span style="color:var(--muted)">Waiting for trigger...</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="sim-actions">
+      <button class="sim-btn danger" id="fail-btn" onclick="failProvider()">
+        <span class="lang-en">🔥 Simulate Provider Failure</span>
+        <span class="lang-zh">🔥 模拟 Provider 故障</span>
+      </button>
+      <button class="sim-btn" onclick="resetSim()">
+        <span class="lang-en">⟳ Reset</span>
+        <span class="lang-zh">⟳ 重置</span>
+      </button>
+    </div>
+  </div>
+</div>
+</section>
+<script>setTimeout(runSim, 200);</script>
+
+<!-- ===== BLOCK 1: THE PROBLEM ===== -->
+<section id="problem" style="border-top:1px solid var(--border)">
+<div class="container reveal">
+  <div class="section-label lang-en"><span class="accent">/</span> The Problem</div>
+  <div class="section-label lang-zh"><span class="accent">/</span> 问题</div>
+  <h2 class="lang-en">LLMs Are Unreliable by Default.<br>That's Not a Bug—<span class="highlight">It's Physics.</span></h2>
+  <h2 class="lang-zh">LLM 天生不可靠。<br>这不是 Bug—<span class="highlight">这是物理规律。</span></h2>
+
+  <div class="problem-content">
+    <div>
+      <ul class="problem-list">
+        <li>
+          <span class="icon">🎲</span>
+          <div>
+            <h4 class="lang-en">Non-deterministic by nature</h4>
+            <h4 class="lang-zh">本质上的非确定性</h4>
+            <p class="lang-en">LLM outputs are probabilistic. Traditional SRE tools can't fix what they can't predict.</p>
+            <p class="lang-zh">LLM 输出是概率性的。传统 SRE 工具无法修复不可预测的问题。</p>
+          </div>
+        </li>
+        <li>
+          <span class="icon">👁️</span>
+          <div>
+            <h4 class="lang-en">Monitoring sees — it can't heal</h4>
+            <h4 class="lang-zh">监控"看得见"但"修不了"</h4>
+            <p class="lang-en">Existing tools (gateways, observability) only alert you. You still fix everything manually.</p>
+            <p class="lang-zh">现有方案（网关、监控）只能告警。修复还得人来做。</p>
+          </div>
+        </li>
+        <li>
+          <span class="icon">🌊</span>
+          <div>
+            <h4 class="lang-en">Drift, hallucination, provider instability</h4>
+            <h4 class="lang-zh">漂移、幻觉、Provider 不稳定</h4>
+            <p class="lang-en">These are everyday production realities—not edge cases. Your current stack has no answer.</p>
+            <p class="lang-zh">这些是生产环境的日常，不是边缘 case。你现有方案无解。</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="problem-conclusion">
+        <p class="lang-en" style="margin-bottom:0">You don't need a better gateway. You need a <strong>new engineering paradigm</strong>—an LLM Reliability layer that detects, validates, heals, and learns automatically.</p>
+        <p class="lang-zh" style="margin-bottom:0">你不需要更好的网关。你需要一个<strong>全新的工程范式</strong>——能自动检测、验证、修复和学习的 LLM 可靠性层。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== BLOCK 2: THE THREE CORE ENGINES ===== -->
+<section id="engines" style="border-top:1px solid var(--border)">
+<div class="container reveal">
+  <div class="section-label lang-en"><span class="accent">/</span> The Three Core Engines</div>
+  <div class="section-label lang-zh"><span class="accent">/</span> 三大核心引擎</div>
+  <h2 class="lang-en">A Complete Reliability Loop.<br><span class="highlight">No Gaps.</span></h2>
+  <h2 class="lang-zh">完整的可靠性闭环。<br><span class="highlight">没有缺口。</span></h2>
+
+  <div class="engines-grid">
+    <!-- Engine 1: Self-Healing -->
+    <div class="engine-card">
+      <div class="icon-badge">🔄</div>
+      <h3 class="lang-en">Self-Healing Engine</h3>
+      <h3 class="lang-zh">自愈引擎</h3>
+      <div class="tagline lang-en">Catches failures before your users do.</div>
+      <div class="tagline lang-zh">在你的用户发现之前修好故障。</div>
+      <p class="lang-en">MAPE-K adaptive loop with 4-level recovery: Retry → Degrade → Switch → Flywheel. Circuit breakers, rate limiting, and bulkheads prevent cascading failures. Semantic boundaries keep healing safe.</p>
+      <p class="lang-zh">MAPE-K 自适应循环，4 级恢复阶梯：重试 → 降级 → 切换 → 飞轮学习。断路器、限流、隔离舱防止级联故障。语义边界确保自愈不越界。</p>
+      <ul>
+        <li class="lang-en">4-level recovery (Retry → Degrade → Switch → Learn)</li>
+        <li class="lang-zh">4 级恢复（重试 → 降级 → 切换 → 学习）</li>
+        <li class="lang-en">Circuit breaker + rate limiter + bulkhead</li>
+        <li class="lang-zh">断路器 + 限流 + 隔离舱</li>
+        <li class="lang-en">Semantic boundary enforcement</li>
+        <li class="lang-zh">语义边界控制</li>
+      </ul>
+    </div>
+
+    <!-- Engine 2: Semantic Validation -->
+    <div class="engine-card">
+      <div class="icon-badge">✓</div>
+      <h3 class="lang-en">Semantic Validation</h3>
+      <h3 class="lang-zh">语义验证</h3>
+      <div class="tagline lang-en">Knows when an answer is wrong—not just when it's slow.</div>
+      <div class="tagline lang-zh">知道答案对不对，不只是响应快不快。</div>
+      <p class="lang-en">5 contract strategies: Schema, Deterministic Hash, Similarity, Entity, Prohibited Patterns. 6-dimension protocol validation at the MCP layer. Catches "looks correct but is wrong" responses.</p>
+      <p class="lang-zh">5 种 Contract 策略：Schema、确定性哈希、相似度、实体、禁止模式。MCP 层 6 维协议校验。拦截"看起来正常但实际错误"的响应。</p>
+      <ul>
+        <li class="lang-en">5 contract strategies for any use case</li>
+        <li class="lang-zh">5 种 Contract 策略覆盖所有场景</li>
+        <li class="lang-en">6-dimension MCP protocol validation</li>
+        <li class="lang-zh">MCP 层 6 维协议校验</li>
+        <li class="lang-en">22µs per validation (P50)</li>
+        <li class="lang-zh">每次验证仅 22µs (P50)</li>
+      </ul>
+    </div>
+
+    <!-- Engine 3: Drift Detection -->
+    <div class="engine-card">
+      <div class="icon-badge">📡</div>
+      <h3 class="lang-en">Drift Detection</h3>
+      <h3 class="lang-zh">漂移检测</h3>
+      <div class="tagline lang-en">Watches your models so you don't have to.</div>
+      <div class="tagline lang-zh">替你盯着模型，不用你操心。</div>
+      <p class="lang-en">4 drift categories: Semantic, Model Behavior, Routing Strategy, Provider Performance. Sliding window + EMA trend tracking. INFO/WARN/CRITICAL alerts, proactive not reactive.</p>
+      <p class="lang-zh">4 类漂移检测：语义、模型行为、路由策略、Provider 性能。滑动窗口 + EMA 趋势追踪。INFO/WARN/CRITICAL 三级告警，提前预警而非事后补救。</p>
+      <ul>
+        <li class="lang-en">4 drift categories monitored continuously</li>
+        <li class="lang-zh">4 类漂移持续监控</li>
+        <li class="lang-en">Sliding window + EMA trend analysis</li>
+        <li class="lang-zh">滑动窗口 + EMA 趋势分析</li>
+        <li class="lang-en">Proactive 3-tier alerting (INFO / WARN / CRITICAL)</li>
+        <li class="lang-zh">三级主动告警（INFO / WARN / CRITICAL）</li>
+      </ul>
+    </div>
+  </div>
+
+  <p style="text-align:center;margin-top:24px;max-width:100%;font-size:15px;color:var(--muted-light)">
+    <span class="lang-en">🔄 Drift Detection triggers Self-Healing → Semantic Validation validates the fix → results feed back into Drift baselines. <strong style="color:var(--cyan)">A continuous reliability loop.</strong></span>
+    <span class="lang-zh">🔄 漂移检测触发自愈 → 语义验证校验修复 → 结果反馈回漂移基线。 <strong style="color:var(--cyan)">持续的可靠性闭环。</strong></span>
+  </p>
+</div>
+</section>
+
+<!-- ===== BLOCK 3: THE FULL STACK ===== -->
+<section id="stack" style="border-top:1px solid var(--border)">
+<div class="container reveal">
+  <div class="section-label lang-en"><span class="accent">/</span> The Full Stack</div>
+  <div class="section-label lang-zh"><span class="accent">/</span> 完整能力栈</div>
+  <h2 class="lang-en">Everything Else You Need.<br><span class="highlight">Built In.</span></h2>
+  <h2 class="lang-zh">你需要的一切。<br><span class="highlight">开箱即用。</span></h2>
+  <p class="large lang-en">Not a single-point tool. A complete platform that covers the full LLM reliability lifecycle.</p>
+  <p class="large lang-zh">不是单点工具。是一个覆盖完整 LLM 可靠性生命周期的平台。</p>
+
+  <div class="stack-grid">
+    <div class="stack-card">
+      <div class="icon">🧠</div>
+      <div>
+        <h4 class="lang-en">Intelligent Routing</h4>
+        <h4 class="lang-zh">智能路由</h4>
+        <p class="lang-en">Cost / Latency / Quality strategies with complexity classifier. 9 providers unified behind one API.</p>
+        <p class="lang-zh">成本/延迟/质量三种策略，复杂度分类器自动判断。9 家 Provider 统一接入。</p>
+        <div class="tags"><span>Cost-optimized</span><span>Latency-aware</span><span>9 providers</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="icon">💾</div>
+      <div>
+        <h4 class="lang-en">Agent Crash Recovery</h4>
+        <h4 class="lang-zh">Agent 断点续跑</h4>
+        <p class="lang-en">Checkpoint-based resume. Never start an agent conversation from scratch after a crash.</p>
+        <p class="lang-zh">基于断点的续跑机制。Agent 崩溃后再也不用从头开始。</p>
+        <div class="tags"><span>Auto-resume</span><span>Cost savings</span><span>Long-running agents</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="icon">📊</div>
+      <div>
+        <h4 class="lang-en">Observability</h4>
+        <h4 class="lang-zh">可观测性</h4>
+        <p class="lang-en">Health scoring, cost tracking, carbon tracking, MAPE-K trace visualization, real-time web dashboard.</p>
+        <p class="lang-zh">健康评分、费用追踪、碳排放追踪、MAPE-K 链路可视化、实时 Web 仪表盘。</p>
+        <div class="tags"><span>Real-time</span><span>Carbon-aware</span><span>MAPE-K traces</span></div>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="icon">🧪</div>
+      <div>
+        <h4 class="lang-en">Benchmark Suite</h4>
+        <h4 class="lang-zh">基准测试套件</h4>
+        <p class="lang-en">6 standard scenarios: presence validation, effectiveness validation, boundary testing, fault injection.</p>
+        <p class="lang-zh">6 个标准场景：存在性验证、有效性验证、边界测试、故障注入。</p>
+        <div class="tags"><span>6 scenarios</span><span>Fault injection</span><span>CI/CD ready</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== BLOCK 4: WHY CORRECTOVER VS ALTERNATIVES ===== -->
+<section id="comparison" style="border-top:1px solid var(--border)">
+<div class="container reveal">
+  <div class="section-label lang-en"><span class="accent">/</span> Why Correctover Is Different</div>
+  <div class="section-label lang-zh"><span class="accent">/</span> 为什么 Correctover 不同</div>
+  <h2 class="lang-en">See the Problem. <span class="highlight">Fix It. Learn from It.</span></h2>
+  <h2 class="lang-zh">看见问题。<span class="highlight">修复它。从中学习。</span></h2>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="lang-en">Traditional Gateways</th>
+          <th class="lang-zh">传统网关</th>
+          <th class="lang-en">Observability Tools</th>
+          <th class="lang-zh">可观测性工具</th>
+          <th>Correctover</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lang-en">See the problem</td>
+          <td class="lang-zh">看见问题</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td class="lang-en">Understand semantics</td>
+          <td class="lang-zh">理解语义</td>
+          <td class="cross">✗</td>
+          <td class="cross">✗</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td class="lang-en">Fix it automatically</td>
+          <td class="lang-zh">自动修复</td>
+          <td class="cross">✗</td>
+          <td class="cross">✗</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td class="lang-en">Learn from failures</td>
+          <td class="lang-zh">从故障中学习</td>
+          <td class="cross">✗</td>
+          <td class="cross">✗</td>
+          <td class="check">✓</td>
+        </tr>
+        <tr>
+          <td class="lang-en">Full reliability loop</td>
+          <td class="lang-zh">完整可靠性闭环</td>
+          <td class="cross">✗</td>
+          <td class="cross">✗</td>
+          <td class="check">✓</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="compare-tagline lang-en">
+    <span class="dim">LiteLLM routes.</span> <span class="sep">·</span>
+    <span class="dim">Helicone watches.</span> <span class="sep">·</span>
+    <span class="dim">Portkey configures.</span> <span class="sep">·</span><br>
+    <span class="highlight">Correctover ensures.</span>
+  </div>
+  <div class="compare-tagline lang-zh">
+    <span class="dim">LiteLLM 做路由。</span> <span class="sep">·</span>
+    <span class="dim">Helicone 做监控。</span> <span class="sep">·</span>
+    <span class="dim">Portkey 做配置。</span> <span class="sep">·</span><br>
+    <span class="highlight">Correctover 来保障。</span>
+  </div>
+</div>
+</section>
+
+<!-- ===== BLOCK 5: PROOF ===== -->
+<section id="proof" style="border-top:1px solid var(--border)">
+<div class="container reveal">
+  <div class="section-label lang-en"><span class="accent">/</span> Built for Production</div>
+  <div class="section-label lang-zh"><span class="accent">/</span> 为生产而生</div>
+  <h2 class="lang-en">Validated at <span class="highlight">Every Level.</span></h2>
+  <h2 class="lang-zh">每一层都<span class="highlight">经过验证。</span></h2>
+  <p class="large lang-en">Performance benchmarks, fault injection validation, and architectural transparency. Not marketing numbers—production data.</p>
+  <p class="large lang-zh">性能基准、故障注入验证、架构透明。不是营销数字——是生产数据。</p>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="icon">⚡</div>
+      <div class="value">22<small>µs</small></div>
+      <div class="label lang-en">Diagnosis P50</div>
+      <div class="label lang-zh">故障诊断 P50</div>
+      <div class="sub">1M samples</div>
+    </div>
+    <div class="metric-card">
+      <div class="icon">⚡</div>
+      <div class="value">47<small>µs</small></div>
+      <div class="label lang-en">Diagnosis P99</div>
+      <div class="label lang-zh">故障诊断 P99</div>
+      <div class="sub">1M samples</div>
+    </div>
+    <div class="metric-card">
+      <div class="icon">🛡️</div>
+      <div class="value">70,000<small>+</small></div>
+      <div class="label lang-en">Fault Injections</div>
+      <div class="label lang-zh">故障注入验证</div>
+      <div class="sub lang-en">7 fault types</div>
+      <div class="sub lang-zh">7 种故障类型</div>
+    </div>
+    <div class="metric-card">
+      <div class="icon">📊</div>
+      <div class="value">177,582<small>/s</small></div>
+      <div class="label lang-en">Telemetry Throughput</div>
+      <div class="label lang-zh">遥测吞吐量</div>
+      <div class="sub lang-en">Single thread</div>
+      <div class="sub lang-zh">单线程</div>
+    </div>
+    <div class="metric-card">
+      <div class="icon">🧠</div>
+      <div class="value">84</div>
+      <div class="label lang-en">Self-Healing Rules</div>
+      <div class="label lang-zh">自愈规则</div>
+      <div class="sub lang-en">MAPE-K knowledge base</div>
+      <div class="sub lang-zh">MAPE-K 知识库</div>
+    </div>
+    <div class="metric-card">
+      <div class="icon">🔗</div>
+      <div class="value">9</div>
+      <div class="label lang-en">Supported Providers</div>
+      <div class="label lang-zh">支持的 Provider</div>
+      <div class="sub lang-en">OpenAI · Anthropic · DeepSeek · Google · more</div>
+      <div class="sub lang-zh">OpenAI · Anthropic · DeepSeek · Google · 更多</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== AUDIENCE SEGMENTS ===== -->
+<section id="audience" style="border-top:1px solid var(--border)">
+<div class="container reveal">
+  <div class="section-label lang-en"><span class="accent">/</span> Who It's For</div>
+  <div class="section-label lang-zh"><span class="accent">/</span> 适用人群</div>
+  <h2 class="lang-en">One Platform.<br><span class="highlight">Three Paths In.</span></h2>
+  <h2 class="lang-zh">一个平台。<br><span class="highlight">三种接入方式。</span></h2>
+
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="who lang-en">For AI Teams Hit by Production Failures</div>
+      <div class="who lang-zh">已被生产事故坑过的团队</div>
+      <h3 class="lang-en">Stop paging SRE at 3 AM</h3>
+      <h3 class="lang-zh">别再半夜叫醒 SRE</h3>
+      <p class="lang-en">You have monitoring. You're still manually fixing every LLM outage. Correctover's self-healing engine resolves failures before you wake up—4-level recovery from auto-retry to provider switching to flywheel learning. MTTR from hours to seconds.</p>
+      <p class="lang-zh">你已经有监控了。但每次 LLM 故障还得人工修。Correctover 的自愈引擎在你醒来前就修好了——4 级恢复，从自动重试到 Provider 切换到飞轮学习。MTTR 从小时级降到秒级。</p>
+      <span class="tag lang-en">🎯 Self-healing · MTTR · No more pager</span>
+      <span class="tag lang-zh">🎯 自愈 · MTTR · 不再半夜接报警</span>
+    </div>
+
+    <div class="audience-card">
+      <div class="who lang-en">For AI Product Teams Going to Production</div>
+      <div class="who lang-zh">准备上线的 AI 产品团队</div>
+      <h3 class="lang-en">Your last line of defense before launch</h3>
+      <h3 class="lang-zh">上线前的最后一道防线</h3>
+      <p class="lang-en">PoC works great. But your boss asks "how do we guarantee production reliability?" You need semantic validation for every output, drift detection before users complain, and a clear answer to "what happens when this fails?"</p>
+      <p class="lang-zh">PoC 做得很漂亮。但老板问"上线后怎么保证不出事"——你需要语义验证确保每个输出符合预期，漂移检测在用户投诉前发现问题。</p>
+      <span class="tag lang-en">🎯 Production readiness · Semantic validation · Drift alerts</span>
+      <span class="tag lang-zh">🎯 上线信心 · 语义验证 · 漂移预警</span>
+    </div>
+
+    <div class="audience-card">
+      <div class="who lang-en">For Platform / Infrastructure Teams</div>
+      <div class="who lang-zh">平台 / 基础设施团队</div>
+      <h3 class="lang-en">The LLM reliability layer for your platform</h3>
+      <h3 class="lang-zh">你平台上的 LLM 可靠性层</h3>
+      <p class="lang-en">Multiple teams using LLMs across your org. You need a unified reliability layer—single provider interface, global observability, cost control, and compliance. Correctover sits in your infrastructure stack. Every upstream app gets self-healing automatically.</p>
+      <p class="lang-zh">多个团队在用 LLM。你需要的是一层统一可靠性层——统一 Provider 接入、全局可观测性、成本控制、合规。Correctover 嵌入你的基础设施栈，所有上游应用自动获得自愈能力。</p>
+      <span class="tag lang-en">🎯 Platform layer · Unified · Multi-tenant · Multi-provider</span>
+      <span class="tag lang-zh">🎯 平台层 · 统一接入 · 多租户 · 基础设施</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== BLOCK 6: CTA ===== -->
+<section id="cta" style="border-top:1px solid var(--border)">
+<div class="container reveal" style="max-width:900px">
+  <div class="cta-section">
+    <div class="section-label lang-en" style="text-align:center"><span class="accent">/</span> Get Started</div>
+    <div class="section-label lang-zh" style="text-align:center"><span class="accent">/</span> 开始使用</div>
+    <h2 class="lang-en">Stop Hoping Your LLM Works.<br><span class="highlight">Start Knowing It Does.</span></h2>
+    <h2 class="lang-zh">别再祈祷你的 LLM 正常工作。<br><span class="highlight">开始确认它真的可靠。</span></h2>
+    <p class="lang-en" style="max-width:480px">From zero to protected in under 5 minutes. No infrastructure changes, no data leaving your process.</p>
+    <p class="lang-zh" style="max-width:480px">5 分钟内从零到受保护。不需要改变基础设施，数据不离开你的进程。</p>
+
+    <div class="cta-grid">
+      <a href="https://github.com/Correctover/mcp-server" target="_blank" class="cta-card">
+        <div class="title lang-en">📦 Deploy in 5 Minutes</div>
+        <div class="title lang-zh">📦 5 分钟部署</div>
+        <div class="desc lang-en">Quickstart guide · pip install correctover</div>
+        <div class="desc lang-zh">快速开始指南 · pip install correctover</div>
+      </a>
+      <a href="https://github.com/Correctover/mcp-server" target="_blank" class="cta-card">
+        <div class="title lang-en">📖 Read the Architecture</div>
+        <div class="title lang-zh">📖 了解架构</div>
+        <div class="desc lang-en">MAPE-K loop · 6-dim validation · Drift detection</div>
+        <div class="desc lang-zh">MAPE-K 循环 · 6 维验证 · 漂移检测</div>
+      </a>
+      <a href="mailto:team@correctover.com" class="cta-card">
+        <div class="title lang-en">💬 Talk to Us</div>
+        <div class="title lang-zh">💬 联系我们</div>
+        <div class="desc lang-en">Enterprise plans · OEM · Custom deployments</div>
+        <div class="desc lang-zh">企业方案 · OEM · 定制部署</div>
+      </a>
+    </div>
+
+    <div class="hero-actions" style="justify-content:center;margin:24px 0 0">
+      <span class="code-snippet" style="display:inline-flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);padding:10px 16px;border-radius:6px;font-family:'SF Mono',Monaco,'Cascadia Code',monospace;font-size:14px;color:var(--cyan);cursor:pointer;user-select:none" onclick="navigator.clipboard?.writeText('pip install correctover');this.textContent='✓ Copied!';setTimeout(()=>this.innerHTML='pip install correctover <span style=\\'font-size:16px;opacity:0.5\\'>📋</span>',1500)">
+        pip install correctover <span style="font-size:16px;opacity:0.5">📋</span>
+      </span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+<div class="container">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h5 class="lang-en">Platform</h5>
+      <h5 class="lang-zh">平台</h5>
+      <a href="#engines"><span class="lang-en">Self-Healing</span><span class="lang-zh">自愈引擎</span></a>
+      <a href="#engines"><span class="lang-en">Semantic Validation</span><span class="lang-zh">语义验证</span></a>
+      <a href="#engines"><span class="lang-en">Drift Detection</span><span class="lang-zh">漂移检测</span></a>
+      <a href="#stack"><span class="lang-en">Full Stack</span><span class="lang-zh">完整能力栈</span></a>
+    </div>
+    <div class="footer-col">
+      <h5 class="lang-en">Resources</h5>
+      <h5 class="lang-zh">资源</h5>
+      <a href="https://github.com/Correctover/mcp-server" target="_blank">GitHub</a>
+      <a href="https://github.com/Correctover/mcp-server" target="_blank">Documentation</a>
+      <a href="https://github.com/Correctover/neuralbridge-sdk" target="_blank">NeuralBridge SDK</a>
+      <a href="console.html"><span class="lang-en">Console</span><span class="lang-zh">控制台</span></a>
+    </div>
+    <div class="footer-col">
+      <h5 class="lang-en">Company</h5>
+      <h5 class="lang-zh">公司</h5>
+      <a href="mailto:team@correctover.com">team@correctover.com</a>
+      <a href="https://correctover.com">correctover.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Correctover.
+    <span class="lang-en">"correct" + "recover" — the LLM Reliability Engineering Platform.</span>
+    <span class="lang-zh">"correct" + "recover" — LLM 可靠性工程平台。</span>
+  </div>
+</div>
+</footer>
 </body>
 </html>
