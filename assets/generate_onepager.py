@@ -90,7 +90,7 @@ stats_data = [
     [Paragraph("14.5<font color='#888899' size='9'>µs</font>", s_sn),
      Paragraph("24", s_sn),
      Paragraph("80K", s_sn),
-     Paragraph("4,709", s_sn)],
+     Paragraph("1,730+", s_sn)],
     [Paragraph("P50 Latency", s_sl),
      Paragraph("CCS Detection Rules", s_sl),
      Paragraph("Production Traces", s_sl),

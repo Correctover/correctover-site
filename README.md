@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE.txt)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21234580-blue)](https://doi.org/10.5281/zenodo.21234580)
 
-**24 CCS Rules · 80K Production Traces · 4,709 Validated Findings**
+**24 CCS Rules · 80K Production Traces · 1,730+ Validated Findings**
 
 ---
 

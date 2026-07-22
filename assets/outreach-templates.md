@@ -14,7 +14,7 @@
 | Latency | 14.5µs per check |
 | CCS Rules | 24 (CRITICAL/HIGH) |
 | API Traces | 80,000+ |
-| Findings Generated | 4,709 |
+| Findings Generated | 1,730+ |
 | Bounty Disclosures | 7 across 8 AI frameworks |
 | Target Profile | RCE / SSRF / Credential Leak in AI runtime |
 | Pricing | Free Trial (7d), Pro ¥99/mo, Annual ¥699, Team ¥499/mo |
@@ -86,7 +86,7 @@
 
 > Glad we connected, [Name]. I read your piece on [their post about CI/CD / security tooling] — the part about [specific point] resonated.
 >
-> Our CCS engine sits inline at 14.5µs and catches runtime RCE in AI agent pipelines before they hit production. We just published an **AI Runtime Audit Report** covering 4,709 findings across the OSS AI ecosystem.
+> Our CCS engine sits inline at 14.5µs and catches runtime RCE in AI agent pipelines before they hit production. We just published an **AI Runtime Audit Report** covering 1,730+ findings across the OSS AI ecosystem.
 >
 > Happy to share the full report. Short call this week to see if the patterns match what you're dealing with?
 
@@ -136,7 +136,7 @@ At Correctover, we built a real-time runtime protection layer for AI application
 - **14.5µs** per check — inline, no perceptible latency
 - **24 CCS rules** catching RCE, SSRF, credential leaks specific to AI frameworks
 - **7 bounty disclosures** across LangChain, CrewAI, AutoGen, LiteLLM, LlamaIndex, etc.
-- Proven on **80K API traces** with **4,709 findings**
+- Proven on **80K API traces** with **1,730+ findings**
 
 We found that 73% of AI production deployments have at least one runtime blind spot that traditional DAST/SAST/WAF misses entirely.
 
@@ -196,7 +196,7 @@ One angle that might be worth an early look: AI runtime security. Most organizat
 
 At Correctover, we've disclosed **7 vulnerabilities across 8 AI frameworks**, including RCE and SSRF patterns that bypass traditional DAST/SAST. Our runtime engine catches these at **14.5µs overhead** — inline, no proxy, no sidecar.
 
-Would a 15-min briefing on the AI runtime threat landscape be useful as you build your roadmap? No pitch — just sharing what we've found across 80K API traces and 4,709 real findings.
+Would a 15-min briefing on the AI runtime threat landscape be useful as you build your roadmap? No pitch — just sharing what we've found across 80K API traces and 1,730+ real findings.
 
 Best,
 [Your Name]
@@ -226,7 +226,7 @@ The shift to managed AI services and agentic pipelines introduces a class of run
 - **SSRF through model serving infrastructure**
 - **Credential leak in agentic data paths**
 
-Correctover sits inline at **14.5µs** and catches these patterns across 8 major AI frameworks. We've confirmed these with **7 bounty disclosures** and **4,709 findings** from our 80K-trace corpus.
+Correctover sits inline at **14.5µs** and catches these patterns across 8 major AI frameworks. We've confirmed these with **7 bounty disclosures** and **1,730+ findings** from our 80K-trace corpus.
 
 I'd be happy to schedule a 15-min call to discuss how runtime security fits into your cloud migration roadmap. Or I can share our cloud-native deployment guide.
 

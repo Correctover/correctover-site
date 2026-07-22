@@ -16,7 +16,7 @@
 | Coverage | 13 providers, 33 models, 8 AI frameworks |
 | CCS Rules | 24 (CRITICAL/HIGH) |
 | API Traces | 80,000+ |
-| Findings | 4,709 |
+| Findings | 1,730+ |
 | Bounty Disclosures | 7 across 8 frameworks |
 | Pricing | Essential $9,600-$18,000/yr, Professional $28,000-$48,000/yr, Enterprise $65,000+/yr |
 | Trial | 15-30 day POC available |
@@ -214,7 +214,7 @@ Filters:
 
 > Thanks for connecting, [Name]. Saw your post about [specific topic] — timely given what we're seeing in the field.
 >
-> We mapped the AI runtime attack surface across 13 providers and 33 models. Found 4,709 real findings — including RCE patterns that every CISO should have on their radar. I put together a **CISO's Guide to AI Runtime Threats** covering the top 7 attack vectors.
+> We mapped the AI runtime attack surface across 13 providers and 33 models. Found 1,730+ real findings — including RCE patterns that every CISO should have on their radar. I put together a **CISO's Guide to AI Runtime Threats** covering the top 7 attack vectors.
 >
 > Would a 15-min walkthrough of the threat landscape be useful? Or I can send the guide directly.
 
@@ -468,7 +468,7 @@ Mike Johnson,Head of DevSecOps,AICorp,https://linkedin.com/in/mikej,T2-DevSecOps
 |---|---|---|---|
 | Mon | Carousel | "What 24 CCS rules cover." Breakdown by category: RCE (8 rules), SSRF (6), Credential Leak (5), Protocol Abuse (3), Policy (2). | "You can't secure what you can't classify. Here's our taxonomy." |
 | Wed | Checklist Image | "CCS Compliance: A 24-point AI Runtime Security Checklist." Printable visual. | "CISO question of the week: 'Are our AI agents compliant?' Here's how to answer." |
-| Fri | Text + Link | How the CCS framework maps to SOC2, ISO27001, and OWASP AI Security. Link to blog article. | "24 rules. 80K traces. 4,709 findings. The CCS framework is the closest thing to an AI runtime security standard today." |
+| Fri | Text + Link | How the CCS framework maps to SOC2, ISO27001, and OWASP AI Security. Link to blog article. | "24 rules. 80K traces. 1,730+ findings. The CCS framework is the closest thing to an AI runtime security standard today." |
 
 **Target Audience**: CISO, Compliance Officers, Security Architects
 **Key Message**: CCS provides a structured, auditable framework for AI runtime security — not a black box

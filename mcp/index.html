@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Correctover MCP Server — Reliability Layer for AI Agent Tools</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,system-ui,sans-serif; background:#08080f; color:#e8e8f0; line-height:1.6; }
+.hero { padding:100px 20px 50px; text-align:center; max-width:800px; margin:0 auto; }
+.hero h1 { font-size:36px; font-weight:800; margin-bottom:16px; }
+.cyan { color:#00d4b0; }
+.hero p { color:#8080a0; font-size:16px; max-width:600px; margin:0 auto 24px; }
+code { background:#000; padding:12px 16px; border-radius:6px; display:block; color:#00d4b0; font-size:14px; word-break:break-all; margin:12px 0; }
+.btn { display:inline-block; padding:10px 24px; border-radius:6px; font-weight:600; text-decoration:none; margin:4px; }
+.btn-p { background:#00d4b0; color:#08080f; }
+.btn-o { border:1px solid #282848; color:#e8e8f0; }
+section { padding:40px 20px; max-width:800px; margin:0 auto; border-bottom:1px solid #1a1a2e; }
+h2 { font-size:24px; margin-bottom:16px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.card { background:#0d0d1a; border:1px solid #1a1a2e; border-radius:8px; padding:20px; }
+.card h3 { font-size:14px; margin-bottom:4px; }
+.card p { font-size:13px; color:#8080a0; margin:0; }
+.reg { display:flex; gap:8px; flex-wrap:wrap; }
+.reg a { padding:8px 16px; background:#0d0d1a; border:1px solid #1a1a2e; border-radius:6px; color:#e8e8f0; text-decoration:none; }
+pre { background:#000; padding:16px; border-radius:8px; font-size:13px; overflow-x:auto; line-height:1.6; }
+footer { text-align:center; padding:30px; color:#606080; font-size:13px; }
+</style>
+</head>
+<body>
+<section class="hero">
+<h1>The <span class="cyan">Reliability Layer</span> for Your AI Agent Tools</h1>
+<p>Contract validation, self-healing failover, and BYOK encryption for every MCP tool call. Drop-in middleware, zero infrastructure changes.</p>
+<code>npx correctover-mcp-server</code>
+<div style="display:flex;gap:8px;justify-content:center;">
+<a class="btn btn-p" href="https://github.com/correctover/mcp-server">View on GitHub →</a>
+<a class="btn btn-o" href="mailto:wangguigui@correctover.com?subject=MCP%%20Enterprise%%20Inquiry">Enterprise →</a>
+</div>
+</section>
+
+<section>
+<h2>6-Dimension Contract Validation</h2>
+<div class="grid">
+<div class="card"><h3>📋 Schema Validation</h3><p>JSON Schema enforcement on every MCP tool input/output. Catches malformed payloads before they reach agent logic.</p></div>
+<div class="card"><h3>🔗 Deterministic Hash</h3><p>Hash-based response verification. Detects corrupted or tampered outputs by comparing signatures.</p></div>
+<div class="card"><h3>📐 Similarity Check</h3><p>Semantic vector comparison against expected output profiles. Flags looks-correct-but-wrong responses.</p></div>
+<div class="card"><h3>🔍 Entity Extraction</h3><p>Named entity validation against allowed schemas. Prevents PII and credential leakage through tool responses.</p></div>
+<div class="card"><h3>🚫 Prohibited Patterns</h3><p>Regex-based pattern blocking for code execution, path traversal, and SSRF attempts in tool arguments.</p></div>
+<div class="card"><h3>💬 Prompt Injection Guard</h3><p>Detects prompt injection attempts embedded in tool call parameters before they reach the LLM.</p></div>
+</div>
+</section>
+
+<section>
+<h2>Self-Healing Failover</h2>
+<p style="color:#8080a0;">When a provider returns errors, Correctover transparently retries across fallback providers, validates the replacement response, and continues streaming — all within the same tool call lifecycle.</p>
+</section>
+
+<section>
+<h2>Registries</h2>
+<div class="reg">
+<a href="https://www.npmjs.com/package/correctover-mcp-server">📦 npm</a>
+<a href="https://github.com/correctover/mcp-server">🐙 GitHub</a>
+<a href="https://glama.ai/mcp/servers/w0t3c6v41a">✨ Glama (Official)</a>
+<a href="https://smithery.ai/server/@correctover/mcp-server">🔧 Smithery</a>
+</div>
+</section>
+
+<section>
+<h2>Client Configuration</h2>
+<p style="color:#8080a0;margin-bottom:12px;">Add to your mcpServers config:</p>
+<pre>{
+  "mcpServers": {
+    "correctover": {
+      "command": "npx",
+      "args": ["correctover-mcp-server"],
+      "env": { "CORRECTOVER_API_KEY": "<your-key>" }
+    }
+  }
+}</pre>
+</section>
+
+<footer>
+<p>© 2026 Correctover — AI Runtime Security</p>
+</footer>
+</body>
+</html>

@@ -19,7 +19,7 @@ CONTACT_BLOCK = """
 
 **Correctover** — AI Runtime Security
 - Real-time RCE, SSRF & Credential Protection in **14.5µs**
-- **24 CCS** detection rules · **80K** production traces · **4,709** validated findings
+- **24 CCS** detection rules · **80K** production traces · **1,730+** validated findings
 - [correctover.com/en](https://correctover.com/en) · [GitHub](https://github.com/correctover/mcp-server)
 
 *This article is for informational purposes. Vulnerability findings are from responsible disclosure programs. Benchmark data from Correctover internal testing.*
