@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Correctover Compliance Check — MCP OAuth 2.1 &amp; CCS v1.0 Certifier</title>
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg-alt: #0f1521;
+      --card: #1e293b;
+      --card-hover: #243449;
+      --primary: #38bdf8;
+      --primary-dim: #0ea5e9;
+      --green: #4ade80;
+      --yellow: #facc15;
+      --red: #f87171;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-faint: #64748b;
+      --border: #334155;
+      --border-light: #475569;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --mono: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .logo { font-size: 20px; font-weight: 800; }
+    nav .logo span { color: var(--primary); }
+
+    nav .nav-links { display: flex; gap: 24px; align-items: center; }
+    nav .nav-links a { color: var(--text-dim); font-size: 14px; font-weight: 500; }
+    nav .nav-links a:hover { color: var(--text); text-decoration: none; }
+    nav .nav-links a.active { color: var(--primary); }
+
+    /* Hero */
+    .hero {
+      padding: 72px 0 48px;
+      text-align: center;
+    }
+
+    .hero .tag {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .hero .deadline {
+      display: inline-block;
+      background: rgba(248, 113, 113, 0.1);
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      margin-left: 8px;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 .accent { color: var(--primary); }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+
+    .hero .pip-install {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 28px;
+      font-family: var(--mono);
+      font-size: 16px;
+    }
+
+    .hero .pip-install .dollar { color: var(--text-faint); }
+    .hero .pip-install .cmd { color: var(--green); }
+    .hero .pip-install .pkg { color: var(--primary); }
+
+    /* Section */
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      color: var(--text-dim);
+      font-size: 16px;
+      margin-bottom: 32px;
+    }
+
+    /* Terminal */
+    .terminal-section { padding: 48px 0; }
+
+    .terminal {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-bar .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-bar .dot.red { background: #ff5f57; }
+    .terminal-bar .dot.yellow { background: #febc2e; }
+    .terminal-bar .dot.green { background: #28c840; }
+
+    .terminal-bar .title {
+      margin-left: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .flag { color: var(--primary); }
+    .terminal-body .str { color: var(--yellow); }
+    .terminal-body .comment { color: var(--text-faint); }
+    .terminal-body .ok { color: var(--green); }
+    .terminal-body .warn { color: var(--yellow); }
+    .terminal-body .err { color: var(--red); }
+    .terminal-body .info { color: var(--primary); }
+
+    /* Features */
+    .features-section { padding: 48px 0; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .feature-card:hover { border-color: var(--border-light); }
+
+    .feature-card .icon { font-size: 28px; margin-bottom: 12px; }
+
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .feature-card .checks {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Pricing */
+    .pricing-section { padding: 48px 0 60px; }
+
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-card.featured {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    .price-card .tier {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .price-card.featured .tier { color: var(--primary); }
+
+    .price-card .amount {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .price-card .period {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .price-card .desc {
+      font-size: 13px;
+      color: var(--text-faint);
+      margin: 8px 0 24px;
+    }
+
+    .price-card ul {
+      list-style: none;
+      margin-bottom: 28px;
+      flex-grow: 1;
+    }
+
+    .price-card ul li {
+      font-size: 14px;
+      padding: 6px 0;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .price-card ul li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .price-card ul li.no::before { content: "—"; color: var(--text-faint); }
+
+    .price-card .limit {
+      background: rgba(74, 222, 128, 0.08);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--green);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: block;
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: var(--primary-dim); text-decoration: none; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-light);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); text-decoration: none; }
+
+    /* CTA */
+    .cta-section { padding: 48px 0 80px; }
+
+    .cta-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    .cta-box h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .cta-box .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-box .btn { padding: 14px 32px; font-size: 15px; }
+
+    .pypi-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-top: 20px;
+    }
+
+    .pypi-link a { font-weight: 600; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid, .pricing-cards { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 30px; }
+      .hero p { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="logo">Correctover <span>Compliance Check</span></div>
+      <div class="nav-links">
+        <a href="/agents/">All Agents</a>
+        <a href="/agents/security-audit.html">Security Audit</a>
+        <a href="/agents/compliance-check.html" class="active">Compliance</a>
+        <a href="/agents/runtime-guard.html">Runtime Guard</a>
+        <a href="/agents/pricing.html">Pricing</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <span class="tag">📋 MCP Compliance Certifier</span>
+      <span class="deadline">⏰ Mandate deadline: 2026-07-28</span>
+      <h1>Certify your MCP server for<br><span class="accent">OAuth 2.1 &amp; CCS v1.0</span></h1>
+      <p>18 automated compliance checks across OAuth 2.1, CCS v1.0 standard, and MCP protocol. Get officially certified or run a free check.</p>
+      <div class="pip-install">
+        <span class="dollar">$</span>
+        <span class="cmd">pip install</span>
+        <span class="pkg">correctover-compliance-check</span>
+      </div>
+    </section>
+
+    <!-- Quick Start Terminal -->
+    <section class="terminal-section">
+      <h2 class="section-title">Quick Start</h2>
+      <p class="section-subtitle">Run a compliance check in seconds. Get certified when you're ready.</p>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+          <span class="title">bash — correctover-compliance-check</span>
+        </div>
+        <div class="terminal-body"><span class="comment"># Install from PyPI</span>
+<span class="prompt">$</span> <span class="cmd">pip install correctover-compliance-check</span>
+<span class="ok">Successfully installed correctover-compliance-check-1.0.0</span>
+
+<span class="comment"># Free compliance check (no certificate)</span>
+<span class="prompt">$</span> <span class="cmd">correctover-compliance-check check-full</span>
+
+<span class="info">  ╭─ Correctover Compliance Check ─────────────────╮</span>
+<span class="info">  │ Checking: OAuth 2.1 (8 checks)                 │</span>
+<span class="info">  │ Checking: CCS v1.0 Standard (5 checks)         │</span>
+<span class="info">  │ Checking: MCP Protocol (5 checks)              │</span>
+<span class="info">  ╰─────────────────────────────────────────────────╯</span>
+
+  <span class="ok">✓ PASS  OAuth 2.1 — PKCE required</span>
+  <span class="ok">✓ PASS  OAuth 2.1 — Authorization code flow</span>
+  <span class="ok">✓ PASS  OAuth 2.1 — Token endpoint HTTPS</span>
+  <span class="warn">⚠ FAIL  OAuth 2.1 — No client_credentials for user agents</span>
+  <span class="ok">✓ PASS  CCS v1.0 — Fail-closed guardrail</span>
+  <span class="ok">✓ PASS  CCS v1.0 — Audit log retention</span>
+  <span class="warn">⚠ FAIL  CCS v1.0 — Rate limiting on tool calls</span>
+  <span class="ok">✓ PASS  MCP Protocol — Tool schema validation</span>
+
+  <span class="comment">  ─────────────────────────────────────────────────</span>
+  <span class="info">  Result: 16/18 checks passed (2 failures)</span>
+  <span class="info">  Status: NOT CERTIFIED</span>
+  <span class="ok">  Free tier: unlimited checks (no certificate)</span>
+
+<span class="comment"># Apply for official certification</span>
+<span class="prompt">$</span> <span class="cmd">correctover-compliance-check certify</span> <span class="flag">--org</span> <span class="str">"My Company"</span>
+<span class="info">  → Submitting certification application...</span>
+<span class="info">  → Payment: $2,999 (one-time) + $999/year</span>
+<span class="ok">  → Certificate ID: CCS-2026-XXXX issued ✓</span>
+<span class="ok">  → Badge: "Correctover Certified" ready for README</span></div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+      <h2 class="section-title">Compliance Coverage</h2>
+      <p class="section-subtitle">18 checks across 3 standards. Built for the 2026-07-28 mandate.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="icon">🔐</div>
+          <h3>OAuth 2.1 Compliance</h3>
+          <p>PKCE enforcement, authorization code flow, HTTPS-only token endpoints, no implicit grant, and more.</p>
+          <span class="checks">8 checks</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📐</div>
+          <h3>CCS v1.0 Standard</h3>
+          <p>Fail-closed guardrails, audit logging, rate limiting, tool schema validation, and incident response.</p>
+          <span class="checks">5 checks</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🔌</div>
+          <h3>MCP Protocol</h3>
+          <p>Tool schema validation, resource access controls, prompt injection guards, transport security, and more.</p>
+          <span class="checks">5 checks</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section">
+      <h2 class="section-title">Pricing</h2>
+      <p class="section-subtitle">Check compliance for free. Pay only when you need the certificate.</p>
+      <div class="pricing-cards">
+        <div class="price-card">
+          <div class="tier">Free Check</div>
+          <div class="amount">$0</div>
+          <div class="desc">No credit card required</div>
+          <div class="limit">Unlimited checks · No certificate</div>
+          <ul>
+            <li>All 18 compliance checks</li>
+            <li>Detailed pass/fail report</li>
+            <li>CLI + MCP server mode</li>
+            <li>JSON output format</li>
+            <li class="no">Official certificate</li>
+            <li class="no">Public registry listing</li>
+          </ul>
+          <a href="https://pypi.org/project/correctover-compliance-check/" class="btn btn-outline">Download from PyPI</a>
+        </div>
+
+        <div class="price-card featured">
+          <div class="tier">Certification</div>
+          <div class="amount">$2,999</div>
+          <div class="desc">+$999/year renewal</div>
+          <div class="limit">Official Correctover certificate</div>
+          <ul>
+            <li>Everything in Free Check</li>
+            <li>Official CCS certificate</li>
+            <li>"Correctover Certified" badge</li>
+            <li>Public registry listing</li>
+            <li>Automated re-certification</li>
+            <li>Compliance audit report (PDF)</li>
+          </ul>
+          <a href="https://correctover.com/waitlist" class="btn btn-primary">Get Certified</a>
+        </div>
+
+        <div class="price-card">
+          <div class="tier">Enterprise</div>
+          <div class="amount">Custom</div>
+          <div class="desc">For organizations at scale</div>
+          <div class="limit">Custom policies + dedicated support</div>
+          <ul>
+            <li>Everything in Certification</li>
+            <li>Custom compliance policies</li>
+            <li>Multi-project certification</li>
+            <li>Dedicated compliance officer</li>
+            <li>SLA &amp; priority review</li>
+            <li>SAML SSO</li>
+          </ul>
+          <a href="https://correctover.com/waitlist" class="btn btn-outline">Contact Sales</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div class="cta-box">
+        <h2>Get Certified</h2>
+        <p>The 2026-07-28 OAuth 2.1 mandate is coming. Don't wait — certify now.</p>
+        <div class="cta-buttons">
+          <a href="https://correctover.com/waitlist" class="btn btn-primary">Get Started — Apply for Certification</a>
+          <a href="https://pypi.org/project/correctover-compliance-check/" class="btn btn-outline">Download from PyPI</a>
+        </div>
+        <div class="pypi-link">
+          <span>$</span> <a href="https://pypi.org/project/correctover-compliance-check/">pip install correctover-compliance-check</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 Correctover · <a href="https://correctover.com">correctover.com</a> · Apache-2.0 · <a href="/agents/pricing.html">Full Pricing</a></p>
+    </footer>
+  </div>
+</body>
+</html>

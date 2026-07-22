@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Correctover Security Audit — AI Agent Vulnerability Scanner</title>
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg-alt: #0f1521;
+      --card: #1e293b;
+      --card-hover: #243449;
+      --primary: #38bdf8;
+      --primary-dim: #0ea5e9;
+      --green: #4ade80;
+      --yellow: #facc15;
+      --red: #f87171;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-faint: #64748b;
+      --border: #334155;
+      --border-light: #475569;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --mono: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .logo { font-size: 20px; font-weight: 800; }
+    nav .logo span { color: var(--primary); }
+
+    nav .nav-links { display: flex; gap: 24px; align-items: center; }
+    nav .nav-links a { color: var(--text-dim); font-size: 14px; font-weight: 500; }
+    nav .nav-links a:hover { color: var(--text); text-decoration: none; }
+    nav .nav-links a.active { color: var(--primary); }
+
+    /* Hero */
+    .hero {
+      padding: 72px 0 48px;
+      text-align: center;
+    }
+
+    .hero .tag {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 .accent { color: var(--primary); }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+
+    .hero .pip-install {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 28px;
+      font-family: var(--mono);
+      font-size: 16px;
+    }
+
+    .hero .pip-install .dollar { color: var(--text-faint); }
+    .hero .pip-install .cmd { color: var(--green); }
+    .hero .pip-install .pkg { color: var(--primary); }
+
+    /* Terminal */
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      color: var(--text-dim);
+      font-size: 16px;
+      margin-bottom: 32px;
+    }
+
+    .terminal-section {
+      padding: 48px 0;
+    }
+
+    .terminal {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-bar .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-bar .dot.red { background: #ff5f57; }
+    .terminal-bar .dot.yellow { background: #febc2e; }
+    .terminal-bar .dot.green { background: #28c840; }
+
+    .terminal-bar .title {
+      margin-left: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .flag { color: var(--primary); }
+    .terminal-body .str { color: var(--yellow); }
+    .terminal-body .comment { color: var(--text-faint); }
+    .terminal-body .ok { color: var(--green); }
+    .terminal-body .warn { color: var(--yellow); }
+    .terminal-body .err { color: var(--red); }
+    .terminal-body .info { color: var(--primary); }
+
+    /* Features */
+    .features-section {
+      padding: 48px 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .feature-card:hover { border-color: var(--border-light); }
+
+    .feature-card .icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .feature-card .cwe {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Pricing */
+    .pricing-section {
+      padding: 48px 0 60px;
+    }
+
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-card.featured {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    .price-card .tier {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .price-card.featured .tier { color: var(--primary); }
+
+    .price-card .amount {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .price-card .period {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .price-card .desc {
+      font-size: 13px;
+      color: var(--text-faint);
+      margin: 8px 0 24px;
+    }
+
+    .price-card ul {
+      list-style: none;
+      margin-bottom: 28px;
+      flex-grow: 1;
+    }
+
+    .price-card ul li {
+      font-size: 14px;
+      padding: 6px 0;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .price-card ul li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .price-card ul li.no::before { content: "—"; color: var(--text-faint); }
+
+    .price-card .limit {
+      background: rgba(74, 222, 128, 0.08);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--green);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: block;
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: var(--primary-dim); text-decoration: none; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-light);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); text-decoration: none; }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 48px 0 80px;
+    }
+
+    .cta-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    .cta-box h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .cta-box .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-box .btn { padding: 14px 32px; font-size: 15px; }
+
+    .pypi-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-top: 20px;
+    }
+
+    .pypi-link a { font-weight: 600; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid, .pricing-cards { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 30px; }
+      .hero p { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="logo">Correctover <span>Security Audit</span></div>
+      <div class="nav-links">
+        <a href="/agents/">All Agents</a>
+        <a href="/agents/security-audit.html" class="active">Security Audit</a>
+        <a href="/agents/compliance-check.html">Compliance</a>
+        <a href="/agents/runtime-guard.html">Runtime Guard</a>
+        <a href="/agents/pricing.html">Pricing</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <span class="tag">🔒 AI Agent Vulnerability Scanner</span>
+      <h1>Scan MCP configs &amp; Agent code<br>for <span class="accent">215 fault types</span></h1>
+      <p>Powered by CCS fault taxonomy v2.5 — 88 detection rules, 52 ZDI cases, 8 verified PoCs, 19 CVE-class vulnerabilities.</p>
+      <div class="pip-install">
+        <span class="dollar">$</span>
+        <span class="cmd">pip install</span>
+        <span class="pkg">correctover-security-audit</span>
+      </div>
+    </section>
+
+    <!-- Quick Start Terminal -->
+    <section class="terminal-section">
+      <h2 class="section-title">Quick Start</h2>
+      <p class="section-subtitle">Install and run your first scan in under 30 seconds.</p>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+          <span class="title">bash — correctover-security-audit</span>
+        </div>
+        <div class="terminal-body"><span class="comment"># Install from PyPI</span>
+<span class="prompt">$</span> <span class="cmd">pip install correctover-security-audit</span>
+<span class="ok">Successfully installed correctover-security-audit-1.0.0</span>
+
+<span class="comment"># Quick scan — scans current directory</span>
+<span class="prompt">$</span> <span class="cmd">correctover-security-audit quick</span>
+
+<span class="info">  ╭─ Correctover Security Audit ───────────────────╮</span>
+<span class="info">  │ Scanning: ./mcp-config.json                    │</span>
+<span class="info">  │ Rules: 88 (64 high-confidence)                 │</span>
+<span class="info">  │ Fault types: 215                                │</span>
+<span class="info">  ╰─────────────────────────────────────────────────╯</span>
+
+  <span class="warn">⚠  HIGH  Command Injection (CWE-78)</span>
+     File: ./server.py:42
+     Rule: UNSAFE-SHELL-EXEC
+     Pattern: subprocess.call(user_input, shell=True)
+
+  <span class="warn">⚠  HIGH  SSRF (CWE-918)</span>
+     File: ./tool_handler.py:87
+     Rule: UNRESTRICTED-URL-FETCH
+     Pattern: requests.get(url_from_llm)
+
+  <span class="err">✗  CRIT  Credential Exposure (CWE-200)</span>
+     File: ./config.py:15
+     Rule: HARDCODED-API-KEY
+     Pattern: OPENAI_API_KEY = "sk-..."
+
+  <span class="comment">  ─────────────────────────────────────────────────</span>
+  <span class="info">  Results: 3 findings (1 critical, 2 high)</span>
+  <span class="info">  Scan time: 0.34s</span>
+  <span class="ok">  Free tier: 47/50 scans remaining today</span>
+
+<span class="comment"># Full scan with JSON output for CI/CD</span>
+<span class="prompt">$</span> <span class="cmd">correctover-security-audit scan-mcp</span> <span class="flag">--format</span> <span class="str">json</span> <span class="flag">--output</span> <span class="str">report.sarif</span>
+<span class="ok">✓ Report written to report.sarif (SARIF format)</span></div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+      <h2 class="section-title">Detection Coverage</h2>
+      <p class="section-subtitle">88 detection rules across 215 fault types. Here are the key categories:</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="icon">💉</div>
+          <h3>Command Injection</h3>
+          <p>Detect shell=True with user-controlled input, os.system calls, and eval/exec patterns.</p>
+          <span class="cwe">CWE-78</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🌐</div>
+          <h3>SSRF</h3>
+          <p>Unrestricted URL fetching from LLM output, internal IP access, and metadata endpoint leaks.</p>
+          <span class="cwe">CWE-918</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🔑</div>
+          <h3>Credential Exposure</h3>
+          <p>Hardcoded API keys, tokens in source, env vars in logs, and secrets in config files.</p>
+          <span class="cwe">CWE-200</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📂</div>
+          <h3>Path Traversal</h3>
+          <p>Unsanitized file paths, directory traversal in tool arguments, and symlink attacks.</p>
+          <span class="cwe">CWE-22</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🗄️</div>
+          <h3>SQL/NoSQL Injection</h3>
+          <p>String-formatted queries, unsanitized ORM calls, and NoJS injection in document stores.</p>
+          <span class="cwe">CWE-89</span>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🚪</div>
+          <h3>Fail-Open Bypass</h3>
+          <p>Exception swallowing in auth checks, broad except clauses, and silent guardrail failures.</p>
+          <span class="cwe">CWE-636</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section">
+      <h2 class="section-title">Pricing</h2>
+      <p class="section-subtitle">Start free. Upgrade when you need more. Hard limits on free tier — no surprises.</p>
+      <div class="pricing-cards">
+        <div class="price-card">
+          <div class="tier">Free</div>
+          <div class="amount">$0</div>
+          <div class="desc">No credit card required</div>
+          <div class="limit">Hard limit: 50 scans/day</div>
+          <ul>
+            <li>215 fault type detection</li>
+            <li>88 detection rules</li>
+            <li>JSON output format</li>
+            <li>CLI + MCP server mode</li>
+            <li class="no">CI/CD integration</li>
+            <li class="no">Custom detection rules</li>
+          </ul>
+          <a href="https://pypi.org/project/correctover-security-audit/" class="btn btn-outline">Download from PyPI</a>
+        </div>
+
+        <div class="price-card featured">
+          <div class="tier">Pro</div>
+          <div class="amount">$499<span class="period">/mo</span></div>
+          <div class="desc">For teams shipping AI agents</div>
+          <div class="limit">Unlimited scans</div>
+          <ul>
+            <li>Everything in Free</li>
+            <li>Unlimited scans/day</li>
+            <li>SARIF output for CI/CD</li>
+            <li>GitHub PR integration</li>
+            <li>Slack notifications</li>
+            <li>Custom detection rules</li>
+          </ul>
+          <a href="https://correctover.com/waitlist" class="btn btn-primary">Upgrade to Pro</a>
+        </div>
+
+        <div class="price-card">
+          <div class="tier">Enterprise</div>
+          <div class="amount">Custom</div>
+          <div class="desc">For organizations at scale</div>
+          <div class="limit">Unlimited everything</div>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>On-premise deployment</li>
+            <li>Custom fault taxonomy</li>
+            <li>Dedicated support</li>
+            <li>SLA &amp; audit reports</li>
+            <li>SAML SSO</li>
+          </ul>
+          <a href="https://correctover.com/waitlist" class="btn btn-outline">Contact Sales</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div class="cta-box">
+        <h2>Get Started</h2>
+        <p>Install in seconds. Scan your first MCP config in under a minute.</p>
+        <div class="cta-buttons">
+          <a href="https://correctover.com/waitlist" class="btn btn-primary">Get Started — Upgrade to Pro</a>
+          <a href="https://pypi.org/project/correctover-security-audit/" class="btn btn-outline">Download from PyPI</a>
+        </div>
+        <div class="pypi-link">
+          <span>$</span> <a href="https://pypi.org/project/correctover-security-audit/">pip install correctover-security-audit</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 Correctover · <a href="https://correctover.com">correctover.com</a> · Apache-2.0 · <a href="/agents/pricing.html">Full Pricing</a></p>
+    </footer>
+  </div>
+</body>
+</html>
