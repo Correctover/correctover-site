@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pricing — Correctover AI Runtime Security</title>
+<meta name="description" content="Correctover pricing: Essential, Professional, and Enterprise plans for AI runtime security. Real-time RCE/SSRF/credential protection starting at $9,600/yr.">
+<style>
+:root {
+  --bg: #08080f; --surface: #0d0d1a; --surface2: #111122; --surface3: #161630;
+  --border: #1a1a2e; --border-light: #282848; --text: #e8e8f0;
+  --muted: #606080; --muted-light: #8080a0; --cyan: #00d4b0;
+  --cyan-dim: rgba(0,212,176,0.08); --cyan-glow: rgba(0,212,176,0.15);
+  --red: #ff4466; --red-dim: rgba(255,68,102,0.08);
+  --amber: #ffaa33; --amber-dim: rgba(255,170,51,0.1);
+  --green: #00d4b0; --indigo: #5555dd;
+  --radius: 6px; --radius-lg: 12px; --radius-xl: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,15,0.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+nav {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+}
+.logo { font-weight: 700; font-size: 18px; color: var(--text); }
+.logo em { font-style: normal; color: var(--cyan); }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 24px; transition: color 0.15s; }
+.nav-links a:hover { color: var(--text); }
+
+section { padding: 80px 0; }
+h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin-bottom: 16px; }
+h1 .highlight { color: var(--cyan); }
+h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+p { color: var(--muted); font-size: 16px; max-width: 640px; margin-bottom: 16px; }
+p.large { font-size: 18px; max-width: 700px; }
+a { color: var(--cyan); text-decoration: none; }
+.btn {
+  display: inline-block; padding: 12px 28px; border-radius: var(--radius); font-size: 15px;
+  font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; font-family: inherit;
+  text-align: center;
+}
+.btn-primary { background: var(--cyan); color: #08080f; }
+.btn-primary:hover { opacity: 0.85; text-decoration: none; color: #08080f; }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border-light); }
+.btn-outline:hover { border-color: var(--cyan); text-decoration: none; }
+
+/* Hero */
+.hero { padding: 120px 0 60px; text-align: center; border-bottom: 1px solid var(--border); }
+.hero p { margin: 0 auto 32px; }
+
+/* Pricing cards */
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px;
+}
+.pricing-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: 36px 28px; display: flex; flex-direction: column; transition: border-color 0.2s;
+  position: relative;
+}
+.pricing-card:hover { border-color: var(--border-light); }
+.pricing-card.featured {
+  border-color: var(--cyan); border-width: 2px;
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(0,212,176,0.04) 100%);
+}
+.pricing-card.featured .badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--cyan); color: #08080f; font-size: 12px; font-weight: 700;
+  padding: 4px 14px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
+}
+.pricing-card h3 { font-size: 20px; margin-bottom: 4px; }
+.pricing-card .subtitle { font-size: 13px; color: var(--muted-light); margin-bottom: 20px; }
+.pricing-card .price-range { font-size: 28px; font-weight: 800; color: var(--cyan); margin-bottom: 4px; }
+.pricing-card .price-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.pricing-card .features { list-style: none; margin-bottom: 28px; flex: 1; }
+.pricing-card .features li {
+  padding: 8px 0; font-size: 14px; color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+.pricing-card .features li:last-child { border-bottom: none; }
+.pricing-card .features li::before { content: "✓ "; color: var(--cyan); font-weight: 700; }
+
+/* Stats bar */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border); border-radius: var(--radius-lg); overflow: hidden;
+  margin: 40px auto; max-width: 800px;
+}
+.stat-cell {
+  background: var(--surface); padding: 24px; text-align: center;
+}
+.stat-cell .num { font-size: 20px; font-weight: 800; color: var(--cyan); display: block; }
+.stat-cell .label { font-size: 11px; color: var(--muted-light); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+/* FAQ */
+.faq { max-width: 720px; margin: 0 auto; }
+.faq-item { padding: 20px 0; border-bottom: 1px solid var(--border); }
+.faq-item h3 { font-size: 16px; margin-bottom: 8px; cursor: pointer; }
+.faq-item h3:hover { color: var(--cyan); }
+.faq-item p { font-size: 14px; margin-bottom: 0; }
+
+/* CTA */
+.cta { text-align: center; padding: 80px 0; }
+
+/* Footer */
+footer { padding: 40px 0; text-align: center; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+footer a { color: var(--muted-light); }
+
+@media (max-width: 768px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header>
+<nav>
+  <div><a href="/en" style="color:var(--text);text-decoration:none;">correct<em style="color:var(--cyan);font-style:normal;">over</em></a></div>
+  <div class="nav-links">
+    <a href="/en">Home</a>
+    <a href="/en#features">Product</a>
+    <a href="/blog/index.en.html">Blog</a>
+    <a href="https://github.com/correctover/mcp-server" target="_blank">GitHub</a>
+    <a href="/checkout" style="color:var(--cyan);font-weight:600;">Get License</a>
+  </div>
+</nav>
+</header>
+
+<section class="hero">
+<div class="container">
+  <h1>Simple pricing for <span class="highlight">production-ready</span> runtime security</h1>
+  <p class="large">From 14.5µs real-time attack interception to full CCS compliance reporting. Start with a free trial — no credit card required.</p>
+  <a href="/checkout" class="btn btn-primary">Start Free Trial →</a>
+</div>
+</section>
+
+<div class="container">
+<div class="stats">
+  <div class="stat-cell"><span class="num">14.5 µs</span><span class="label">P50 Intercept Latency</span></div>
+  <div class="stat-cell"><span class="num">24</span><span class="label">CCS Detection Rules</span></div>
+  <div class="stat-cell"><span class="num">80K</span><span class="label">Production Traces</span></div>
+  <div class="stat-cell"><span class="num">4,709</span><span class="label">Validated Findings</span></div>
+</div>
+</div>
+
+<section>
+<div class="container">
+<div class="pricing-grid">
+
+  <!-- Essential -->
+  <div class="pricing-card">
+    <h3>Essential</h3>
+    <div class="subtitle">For teams getting started</div>
+    <div class="price-range">$9,600 – $18,000</div>
+    <div class="price-sub">per year, billed annually</div>
+    <ul class="features">
+      <li>Real-time RCE/SSRF/credential interception</li>
+      <li>Core 24 CCS detection rules</li>
+      <li>Standard logging & alerts</li>
+      <li>Up to 3 deployment targets</li>
+      <li>Email support (48h SLA)</li>
+      <li>Community access</li>
+    </ul>
+    <a href="/checkout" class="btn btn-outline" style="width:100%;">Contact Sales</a>
+  </div>
+
+  <!-- Professional (featured) -->
+  <div class="pricing-card featured">
+    <div class="badge">Most Popular</div>
+    <h3>Professional</h3>
+    <div class="subtitle">For production AI workloads</div>
+    <div class="price-range">$28,000 – $48,000</div>
+    <div class="price-sub">per year, billed annually</div>
+    <ul class="features">
+      <li>All 16 cross-target detection patterns</li>
+      <li>4,709 validated finding coverage</li>
+      <li>Custom rule authoring</li>
+      <li>Monthly CCS compliance reports</li>
+      <li>Up to 10 deployment targets</li>
+      <li>Priority support (24h SLA)</li>
+      <li>SIEM integration (Splunk, ELK, Datadog)</li>
+    </ul>
+    <a href="mailto:wangguigui@correctover.com?subject=Professional%20Plan%20Inquiry" class="btn btn-primary" style="width:100%;">Start POC →</a>
+  </div>
+
+  <!-- Enterprise -->
+  <div class="pricing-card">
+    <h3>Enterprise</h3>
+    <div class="subtitle">For large-scale deployments</div>
+    <div class="price-range">$65,000+</div>
+    <div class="price-sub">per year or usage-based</div>
+    <ul class="features">
+      <li>Full CCS audit suite</li>
+      <li>SOC2/ISO 27001 evidence export</li>
+      <li>Dedicated security engineer</li>
+      <li>Custom SLA & response times</li>
+      <li>Unlimited deployment targets</li>
+      <li>On-premise / VPC deployment option</li>
+      <li>Outcome-based pricing available</li>
+    </ul>
+    <a href="mailto:wangguigui@correctover.com?subject=Enterprise%20Plan%20Inquiry" class="btn btn-outline" style="width:100%;">Contact Us →</a>
+  </div>
+
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<div class="section-label" style="text-align:center;margin-bottom:20px;">FAQ</div>
+<div class="faq">
+  <div class="faq-item">
+    <h3>Do you offer a free trial or POC?</h3>
+    <p>Yes. We offer a 7-day free trial (no credit card) and a 15-30 day paid POC for Professional and Enterprise plans. During the POC we deploy in your environment and provide a full CCS-style audit report at the end.</p>
+  </div>
+  <div class="faq-item">
+    <h3>Can we do outcome-based pricing?</h3>
+    <p>Yes. For Enterprise plans we offer outcome-based pricing where fees are tied to verified interception metrics. This is negotiated per engagement.</p>
+  </div>
+  <div class="faq-item">
+    <h3>How does deployment work?</h3>
+    <p>30 seconds via npm, PyPI, or MCP protocol. Works as a sidecar, SDK, or standalone server. No infrastructure changes required. Supports Cloudflare Workers, Docker, Render.com, and bare metal.</p>
+  </div>
+  <div class="faq-item">
+    <h3>What AI frameworks do you support?</h3>
+    <p>All major frameworks. Our 24 CCS rules have been validated against CrewAI, AutoGen, LiteLLM, LangGraph, Haystack, AG2, LlamaIndex, and Docker MCP. The runtime hooks work at the MCP/tool-call layer, so any framework using MCP tools is supported.</p>
+  </div>
+  <div class="faq-item">
+    <h3>How do you handle false positives?</h3>
+    <p>Our validated false positive rate is &lt;0.3%, confirmed across 4,709 findings. Custom rules include a tuning period to minimize noise for your specific environment.</p>
+  </div>
+  <div class="faq-item">
+    <h3>Can we pay via invoice / PO?</h3>
+    <p>Yes. Enterprise plans support purchase orders, wire transfers, and standard net-30 invoicing. We work with US, EU, and APAC procurement teams.</p>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="cta">
+<div class="container">
+  <h2>Ready to secure your AI <span class="highlight">in production</span>?</h2>
+  <p class="large" style="margin:16px auto 32px;">Join teams deploying real-time runtime security. Free trial, no credit card.</p>
+  <a href="mailto:wangguigui@correctover.com" class="btn btn-primary">Contact Sales</a>
+  <a href="/checkout" class="btn btn-outline" style="margin-left:12px;">Start Free Trial</a>
+</div>
+</section>
+
+<footer>
+<div class="container">
+  <p>© 2026 Correctover — AI Runtime Security. <a href="mailto:wangguigui@correctover.com">wangguigui@correctover.com</a></p>
+  <p style="font-size:12px;margin-top:4px;"><a href="https://github.com/correctover">GitHub</a> · <a href="/en">correctover.com/en</a></p>
+</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "articles": [
+    {
+      "id": 1,
+      "title": "14.5 Microseconds: How We Benchmark Real-time RCE Detection for AI Workloads",
+      "tags": [
+        "security",
+        "ai",
+        "llm",
+        "infosec"
+      ],
+      "published": true,
+      "url": "https://dev.to/correctover/145-microseconds-how-we-benchmark-real-time-rce-detection-for-ai-workloads-3gn"
+    },
+    {
+      "id": 2,
+      "title": "From Bounty to Defense: How 7 RCE Disclosures Shaped Production Detection Rules",
+      "tags": [
+        "security",
+        "ai",
+        "bugbounty",
+        "infosec"
+      ],
+      "published": false
+    },
+    {
+      "id": 3,
+      "title": "CCS Compliance for AI Systems: A 24-Rule Framework for Production Security",
+      "tags": [
+        "security",
+        "compliance",
+        "cloud",
+        "infosec"
+      ],
+      "published": false
+    },
+    {
+      "id": 4,
+      "title": "The AI Runtime Attack Surface: 7 Threats Every CISO Should Know",
+      "tags": [
+        "security",
+        "ciso",
+        "cloud",
+        "infosec"
+      ],
+      "published": false
+    }
+  ],
+  "next_index": 1,
+  "total_published": 1,
+  "created": "2026-07-22",
+  "last_published": "2026-07-22"
+}
