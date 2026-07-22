@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Correctover — AI Runtime Security · Real-time RCE/SSRF/Credential Protection</title>
+<meta name="description" content="Correctover intercepts RCE, SSRF, and cloud credential exfiltration in 14.5µs. Bounty-grade detection rules, CCS compliance reporting, and zero-config deployment for production AI and cloud environments.">
+<style>
+:root {
+  --bg: #08080f;
+  --surface: #0d0d1a;
+  --surface2: #111122;
+  --surface3: #161630;
+  --border: #1a1a2e;
+  --border-light: #282848;
+  --text: #e8e8f0;
+  --muted: #606080;
+  --muted-light: #8080a0;
+  --cyan: #00d4b0;
+  --cyan-dim: rgba(0,212,176,0.08);
+  --cyan-glow: rgba(0,212,176,0.15);
+  --red: #ff4466;
+  --red-dim: rgba(255,68,102,0.08);
+  --amber: #ffaa33;
+  --amber-dim: rgba(255,170,51,0.1);
+  --green: #00d4b0;
+  --indigo: #5555dd;
+  --radius: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 100px 0; }
+h2 { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; line-height: 1.2; }
+h2 .highlight { color: var(--cyan); }
+h3 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+p { color: var(--muted); font-size: 16px; max-width: 640px; margin-bottom: 16px; }
+p.large { font-size: 18px; max-width: 700px; }
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.btn {
+  display: inline-block; padding: 12px 28px; border-radius: var(--radius); font-size: 15px;
+  font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; font-family: inherit;
+}
+.btn-primary { background: var(--cyan); color: #08080f; }
+.btn-primary:hover { opacity: 0.85; text-decoration: none; color: #08080f; }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border-light); }
+.btn-outline:hover { border-color: var(--cyan); text-decoration: none; }
+.section-label {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--muted); margin-bottom: 12px; font-weight: 600;
+}
+/* Header */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,15,0.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+nav {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+}
+.logo { font-weight: 700; font-size: 18px; color: var(--text); letter-spacing: -0.3px; }
+.logo em { font-style: normal; color: var(--cyan); }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
+.nav-links a:hover { color: var(--text); text-decoration: none; }
+.nav-links .btn-small {
+  padding: 6px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 600;
+  background: var(--cyan); color: #08080f; transition: opacity 0.15s;
+}
+.nav-links .btn-small:hover { opacity: 0.9; color: #08080f; }
+/* Hero */
+.hero {
+  padding: 150px 0 80px; border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; opacity: 0.15; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 8s linear infinite;
+}
+@keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
+.hero .brand-tag {
+  display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 24px;
+  padding: 6px 14px; border: 1px solid var(--cyan-dim); border-radius: 20px;
+  background: var(--cyan-dim); position: relative; z-index: 1;
+}
+.hero h1 {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 800; letter-spacing: -1.5px;
+  line-height: 1.1; margin-bottom: 20px; max-width: 850px; position: relative; z-index: 1;
+}
+.hero .subtitle {
+  font-size: 18px; color: var(--muted); max-width: 650px; margin-bottom: 32px; line-height: 1.7;
+  position: relative; z-index: 1;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+/* Stats bar */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border); border-radius: var(--radius-lg); overflow: hidden;
+  margin: -40px auto 0; max-width: 900px; position: relative; z-index: 2;
+}
+.stat-cell {
+  background: var(--surface); padding: 28px 20px; text-align: center;
+}
+.stat-cell .num { font-size: 28px; font-weight: 800; color: var(--cyan); display: block; }
+.stat-cell .label { font-size: 12px; color: var(--muted-light); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.stat-cell .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+/* Feature grid */
+.features { border-bottom: 1px solid var(--border); }
+.features .grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px;
+}
+.feature-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 32px 24px; transition: border-color 0.2s;
+}
+.feature-card:hover { border-color: var(--border-light); }
+.feature-card .icon { font-size: 32px; margin-bottom: 16px; display: block; }
+.feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+.feature-card p { font-size: 14px; margin-bottom: 0; }
+.feature-card .tag {
+  display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px;
+  border-radius: 4px; margin-bottom: 12px; letter-spacing: 0.5px;
+}
+.tag-bounty { background: var(--red-dim); color: var(--red); }
+.tag-perf { background: var(--cyan-dim); color: var(--cyan); }
+.tag-comp { background: var(--amber-dim); color: var(--amber); }
+/* Trust section */
+.trust { border-bottom: 1px solid var(--border); text-align: center; }
+.trust .logos {
+  display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 32px;
+}
+.trust .logos span {
+  font-size: 14px; color: var(--muted-light); font-weight: 500;
+  padding: 8px 16px; background: var(--surface); border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+/* Vulnerability table */
+.vuln-table {
+  width: 100%; border-collapse: collapse; margin-top: 32px;
+  font-size: 14px;
+}
+.vuln-table th {
+  text-align: left; padding: 10px 14px; color: var(--muted); font-weight: 600;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+}
+.vuln-table td {
+  padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text);
+}
+.vuln-table td:first-child { font-family: monospace; font-size: 13px; }
+.vuln-table .severity {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+}
+.sev-critical { background: var(--red-dim); color: var(--red); }
+.sev-high { background: var(--amber-dim); color: var(--amber); }
+/* CTA section */
+.cta-section {
+  text-align: center; padding: 100px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cta-section h2 { max-width: 700px; margin: 0 auto 16px; }
+.cta-section p { margin: 0 auto 32px; }
+.cta-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+/* Footer */
+footer {
+  padding: 40px 0; text-align: center; color: var(--muted); font-size: 13px;
+}
+footer a { color: var(--muted-light); }
+footer a:hover { color: var(--text); text-decoration: none; }
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .features .grid { grid-template-columns: 1fr; }
+  .nav-links a { display: none; }
+  .nav-links .btn-small { display: inline-block; }
+}
+</style>
+</head>
+<body>
+
+<header>
+<nav>
+  <div class="logo">correct<em>over</em></div>
+  <div class="nav-links">
+    <a href="#features">Product</a>
+    <a href="#findings">Findings</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://github.com/correctover/mcp-server" target="_blank">GitHub</a>
+    <a href="/checkout" class="btn-small">Get License</a>
+  </div>
+</nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="container">
+  <div class="brand-tag">🔬 Bounty-Grade Runtime Security</div>
+  <h1>Real-time RCE, SSRF &amp; Credential Protection &mdash; in 14.5 &mu;s</h1>
+  <p class="subtitle">
+    Correctover intercepts critical runtime attacks before they execute.
+    Powered by 24 CCS-certified detection rules validated across 8 AI frameworks
+    and 7 attack surfaces. Zero-config, zero-dependency, deploy in 30 seconds.
+  </p>
+  <div class="hero-actions">
+    <a href="/checkout" class="btn btn-primary">Get Started Free →</a>
+    <a href="https://github.com/correctover/mcp-server" class="btn btn-outline" target="_blank">View on GitHub</a>
+  </div>
+</div>
+</section>
+
+<!-- Stats -->
+<div class="container">
+<div class="stats-bar">
+  <div class="stat-cell">
+    <span class="num">14.5 &mu;s</span>
+    <span class="label">P50 Latency</span>
+    <span class="sub">per-inference intercept</span>
+  </div>
+  <div class="stat-cell">
+    <span class="num">24</span>
+    <span class="label">CCS Detection Rules</span>
+    <span class="sub">critical &amp; high severity</span>
+  </div>
+  <div class="stat-cell">
+    <span class="num">80K</span>
+    <span class="label">Production Traces</span>
+    <span class="sub">13 providers · 33 models</span>
+  </div>
+  <div class="stat-cell">
+    <span class="num">4,709</span>
+    <span class="label">Validated Findings</span>
+    <span class="sub">8 frameworks · 7 targets</span>
+  </div>
+</div>
+</div>
+
+<!-- Features -->
+<section class="features" id="features">
+<div class="container">
+  <div class="section-label"><span class="highlight">Product</span></div>
+  <h2>Three pillars of AI <span class="highlight">Runtime Security</span></h2>
+  <p class="large">From real-time attack interception to compliance-ready audit reports — one unified runtime.</p>
+  <div class="grid">
+    <div class="feature-card">
+      <span class="icon">🛡️</span>
+      <span class="tag tag-perf">14.5µs · P99 99µs</span>
+      <h3>Real-time Attack Interception</h3>
+      <p>Detect and block RCE, SSRF, path traversal, and credential exfiltration at inference time. Sub-15-microsecond overhead means security that doesn't slow you down.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📋</span>
+      <span class="tag tag-comp">CCS · SOC2 Ready</span>
+      <h3>CCS Compliance Automation</h3>
+      <p>Generate CCS-standard audit reports automatically. Map every detection to the 24-rule CCS framework. Accelerate SOC2 and ISO 27001 certification with verifiable evidence.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🔬</span>
+      <span class="tag tag-bounty">4,709 Real-world Findings</span>
+      <h3>Bounty-Grade Detection</h3>
+      <p>Detection rules hardened through real bug bounty hunts across CrewAI, AutoGen, LiteLLM, LangGraph, Haystack, and 3 more frameworks. What we find in the wild ships as rules.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Vulnerability findings -->
+<section class="features" id="findings">
+<div class="container">
+  <div class="section-label"><span class="highlight">Research</span></div>
+  <h2>Validated across <span class="highlight">8 frameworks</span></h2>
+  <p class="large">Every detection rule is battle-tested against real production frameworks — not synthetic benchmarks.</p>
+  <table class="vuln-table">
+    <thead>
+      <tr><th>Target</th><th>Type</th><th>CVSS</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>CrewAI MCP</td><td>Remote Code Execution</td><td><span class="severity sev-critical">CRITICAL</span></td><td>MSRC Submitted</td></tr>
+      <tr><td>AutoGen Studio</td><td>Remote Code Execution</td><td><span class="severity sev-critical">CRITICAL</span></td><td>ZDI Submitted</td></tr>
+      <tr><td>Docker MCP</td><td>Container Escape + RCE</td><td><span class="severity sev-critical">CRITICAL</span></td><td>GitHub Disclosed</td></tr>
+      <tr><td>LiteLLM</td><td>SSRF via Proxy</td><td><span class="severity sev-high">HIGH</span></td><td>GitHub Disclosed</td></tr>
+      <tr><td>AG2 (AutoGen)</td><td>Pickle Deserialization RCE</td><td><span class="severity sev-critical">CRITICAL</span></td><td>GitHub Disclosed</td></tr>
+      <tr><td>LlamaIndex</td><td>Pickle Deserialization RCE</td><td><span class="severity sev-critical">CRITICAL</span></td><td>GitHub Disclosed</td></tr>
+      <tr><td>Haystack</td><td>Pipeline RCE</td><td><span class="severity sev-critical">CRITICAL</span></td><td>GitHub Disclosed</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- Trust indicators -->
+<section class="trust">
+<div class="container">
+  <div class="section-label"><span class="highlight">Ecosystem</span></div>
+  <h2>Available <span class="highlight">everywhere</span> your AI runs</h2>
+  <p class="large" style="margin:0 auto 24px;">Deploy as a sidecar, SDK, or MCP server. Integrates with any LLM runtime in under a minute.</p>
+  <div class="logos">
+    <span>🤖 MCP Protocol</span>
+    <span>🐍 Python SDK</span>
+    <span>📦 npm Package</span>
+    <span>☁️ Cloudflare Workers</span>
+    <span>🏗️ Render.com</span>
+    <span>🐳 Docker</span>
+    <span>⚡ Smithery</span>
+    <span>🏔️ Glama (Official)</span>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="pricing">
+<div class="container">
+  <div class="section-label"><span class="highlight">Get Started</span></div>
+  <h2>From free trial to <span class="highlight">production-grade</span> protection</h2>
+  <p class="large">Start with a 7-day free trial — no credit card, no call required. Upgrade when you need compliance reporting and priority support.</p>
+  <div class="cta-actions">
+    <a href="/checkout" class="btn btn-primary">Start Free Trial →</a>
+    <a href="https://github.com/correctover/mcp-server" class="btn btn-outline" target="_blank">Read the Docs</a>
+  </div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer>
+<div class="container">
+  <p style="margin-bottom:4px;">© 2026 Correctover — AI Runtime Security.</p>
+  <p style="font-size:12px;">
+    <a href="https://github.com/correctover">GitHub</a> ·
+    <a href="/privacy">Privacy</a> ·
+    <a href="/terms">Terms</a> ·
+    <a href="mailto:wangguigui@correctover.com">Contact</a>
+  </p>
+</div>
+</footer>
+
+</body>
+</html>
