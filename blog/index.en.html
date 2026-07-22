@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correctover Blog — AI Runtime Security</title>
+<meta name="description" content="Engineering deep-dives, threat research, and security frameworks for AI production systems.">
+<style>
+  :root {
+    --bg: #0b0d11;
+    --bg-card: #13161c;
+    --bg-card-hover: #1a1f28;
+    --border: #262b36;
+    --text: #e8edf5;
+    --text-muted: #8892a6;
+    --accent: #4fc3b7;
+    --accent-dim: #2a8a7e;
+    --code-bg: #1a1f28;
+    --max-w: 820px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+  /* header */
+  header {
+    padding: 40px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .logo a { color: var(--text); text-decoration: none; }
+  .logo span { color: var(--accent); }
+  .logo-tag { font-size: 13px; color: var(--text-muted); }
+  nav a { color: var(--text-muted); text-decoration: none; font-size: 14px; margin-left: 20px; transition: color .2s; }
+  nav a:hover { color: var(--accent); }
+
+  /* hero */
+  .hero { margin-bottom: 56px; }
+  .hero h1 { font-size: 36px; font-weight: 750; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 12px; }
+  .hero p { color: var(--text-muted); font-size: 17px; max-width: 600px; }
+
+  /* featured label */
+  .section-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; margin-bottom: 20px; }
+
+  /* articles grid */
+  .articles { display: flex; flex-direction: column; gap: 20px; margin-bottom: 64px; }
+  .article-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    transition: background .2s, border-color .2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .article-card:hover { background: var(--bg-card-hover); border-color: var(--accent-dim); }
+  .article-card .meta { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+  .article-card .meta span { margin-right: 14px; }
+  .article-card .tags { margin-bottom: 10px; }
+  .article-card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: rgba(79, 195, 183, 0.1);
+    color: var(--accent);
+    margin-right: 6px;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+  }
+  .article-card h2 { font-size: 20px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+  .article-card p { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+
+  /* footer */
+  footer { border-top: 1px solid var(--border); padding: 24px 0 40px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 28px; }
+    .article-card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div>
+      <div class="logo"><a href="/"><span>Correctover</span> Security</a></div>
+      <div class="logo-tag">AI Runtime Security Research</div>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://github.com/correctover" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1>Correctover Blog</h1>
+    <p>Engineering deep-dives, threat research, and production security frameworks for AI systems. Written by the team behind the industry's first real-time AI runtime security platform.</p>
+  </div>
+
+  <div class="section-label">Latest Articles</div>
+
+  <div class="articles">
+
+    <a class="article-card" href="article-1.html">
+      <div class="tags"><span class="tag">Engineering</span><span class="tag">Benchmarking</span></div>
+      <h2>14.5 Microseconds: How We Benchmark Real-time RCE Detection for AI Workloads</h2>
+      <p>A technical deep-dive into latency benchmarking methodology for runtime attack interception. Why sub-100-microsecond detection matters in production AI, and how we measure P50=14.5&micro;s across 13 model providers.</p>
+      <div class="meta"><span>Jul 22, 2026</span><span>12 min read</span></div>
+    </a>
+
+    <a class="article-card" href="article-2.html">
+      <div class="tags"><span class="tag">Threat Research</span><span class="tag">Responsible Disclosure</span></div>
+      <h2>From Bounty to Defense: How 7 RCE Disclosures Shaped Our Detection Rules</h2>
+      <p>Walk through each of our 7 responsible disclosures across CrewAI, AutoGen, LiteLLM, LangGraph, Haystack, AG2, and LlamaIndex. The common pattern: lack of runtime input validation. How each became a CCS detection rule.</p>
+      <div class="meta"><span>Jul 21, 2026</span><span>15 min read</span></div>
+    </a>
+
+    <a class="article-card" href="article-3.html">
+      <div class="tags"><span class="tag">Framework</span><span class="tag">Compliance</span></div>
+      <h2>CCS Compliance for AI Systems: A 24-Rule Framework for Production Security</h2>
+      <p>Introducing the Cloud Cybersecurity Standard for AI workloads. Why NIST CSF and SOC 2 leave blind spots in AI-specific attack surfaces, and how 24 detection rules map to automated compliance verification.</p>
+      <div class="meta"><span>Jul 20, 2026</span><span>10 min read</span></div>
+    </a>
+
+    <a class="article-card" href="article-4.html">
+      <div class="tags"><span class="tag">CISO Guide</span><span class="tag">Threat Landscape</span></div>
+      <h2>The AI Runtime Attack Surface: 7 Threats Every CISO Should Know</h2>
+      <p>From RCE via MCP tools to supply chain tampering and pipeline drift &mdash; the 7 most critical AI runtime threats facing enterprises today. Real-world impact, likelihood, and a pragmatic defense approach.</p>
+      <div class="meta"><span>Jul 19, 2026</span><span>11 min read</span></div>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2026 Correctover. AI Runtime Security. &mdash; <a href="https://github.com/correctover">GitHub</a> &middot; <a href="https://dev.to/correctover" target="_blank">Dev.to</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

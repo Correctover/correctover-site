@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Security Assessment Checklist — AI Runtime Edition</title>
+<style>
+  :root {
+    --bg: #08080f;
+    --surface: #0f0f1a;
+    --surface2: #16162a;
+    --border: #1e1e38;
+    --cyan: #00d4b0;
+    --cyan-dim: rgba(0, 212, 176, 0.12);
+    --cyan-glow: rgba(0, 212, 176, 0.25);
+    --text: #e8e8f0;
+    --text-dim: #9090a8;
+    --text-muted: #606080;
+    --red: #ff4d6a;
+    --white: #ffffff;
+    --radius: 10px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--cyan);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #08080f;
+    font-weight: 800;
+    font-size: 14px;
+  }
+  .header-actions { display: flex; gap: 10px; }
+  .header-actions .btn { font-size: 13px; padding: 8px 18px; }
+
+  /* ─── Hero ─── */
+  .hero {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 24px 40px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 212, 176, 0.2);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 28px;
+  }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    border: none;
+    font-family: var(--font);
+  }
+  .btn-primary {
+    background: var(--cyan);
+    color: #08080f;
+  }
+  .btn-primary:hover {
+    background: #00e8c0;
+    box-shadow: 0 0 30px var(--cyan-glow);
+    transform: translateY(-1px);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+  }
+  .btn-outline:hover {
+    background: var(--cyan-dim);
+    transform: translateY(-1px);
+  }
+  .btn-download {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-download:hover {
+    border-color: var(--text-dim);
+    background: var(--surface2);
+  }
+
+  /* ─── Separator ─── */
+  .sep {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .sep hr {
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── Stats Bar ─── */
+  .stats {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 24px 8px;
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--cyan);
+  }
+  .stat-item .label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ─── Main Content ─── */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  .intro-text {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+  .intro-text strong { color: var(--text); }
+
+  /* ─── Category ─── */
+  .category {
+    margin-bottom: 36px;
+  }
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .category-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .category-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .category-count {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* ─── Checklist Item ─── */
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s ease;
+  }
+  .item:hover { border-color: rgba(0, 212, 176, 0.25); }
+  .item.completed {
+    border-left: 3px solid var(--cyan);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(0, 212, 176, 0.03) 100%);
+  }
+
+  .item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  /* Checkbox */
+  .item-check {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .item-check input[type="checkbox"] {
+    display: none;
+  }
+  .item-check label {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: 2px solid var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .item-check input:checked + label {
+    background: var(--cyan);
+    border-color: var(--cyan);
+  }
+  .item-check input:checked + label::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 11px;
+    border: solid #08080f;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .item-check label:hover {
+    border-color: var(--cyan);
+  }
+
+  /* Question + Notes */
+  .item-body { flex: 1; min-width: 0; }
+  .item-question {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .item-index {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-right: 8px;
+    font-weight: 400;
+  }
+  .item-notes {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: var(--font);
+    resize: vertical;
+    min-height: 36px;
+    transition: border-color 0.2s ease;
+    display: none;
+  }
+  .item-notes:focus {
+    outline: none;
+    border-color: var(--cyan);
+    color: var(--text);
+  }
+  .item-notes.active { display: block; }
+
+  .item-notes-toggle {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 0;
+    font-family: var(--font);
+    transition: color 0.2s ease;
+  }
+  .item-notes-toggle:hover { color: var(--cyan); }
+
+  /* ─── Progress Bar ─── */
+  .progress-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 16px;
+  }
+  .progress-bar-outer {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--cyan), #00e8c0);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover { color: var(--cyan); }
+  .footer p {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .footer .brand {
+    color: var(--cyan);
+    font-weight: 600;
+  }
+
+  /* ─── Print Styles ─── */
+  @media print {
+    body { background: #fff; color: #111; }
+    .header { background: #fff; border-bottom: 2px solid #00d4b0; position: static; backdrop-filter: none; }
+    .logo-icon { background: #00d4b0; color: #fff; }
+    .hero h1 { -webkit-text-fill-color: #111; background: none; }
+    .hero-badge { border-color: #00d4b0; color: #00d4b0; background: rgba(0,212,176,0.05); }
+    .stats { display: none; }
+    .header-actions .btn { display: none; }
+    .btn-download { display: none !important; }
+    .hero-cta .btn { display: none; }
+    .hero-cta .btn-print-only { display: inline-flex !important; }
+    .item { background: #f8f8fc; border-color: #ddd; break-inside: avoid; }
+    .item.completed { border-left-color: #00d4b0; }
+    .item-question { color: #111; }
+    .item-notes { border-color: #ccc; color: #333; display: block; background: #f0f0f5; }
+    .category-title { color: #111; }
+    .category-number { background: rgba(0,212,176,0.1); color: #00d4b0; }
+    .category-header { border-bottom-color: #ddd; }
+    .footer { border-top-color: #ddd; }
+    .footer p, .footer-links a { color: #666; }
+    .progress-wrap { display: none; }
+    .intro-text { color: #555; }
+    .intro-text strong { color: #111; }
+    .sep hr { border-top-color: #ddd; }
+    .item-check label { border-color: #999; }
+    .item-check input:checked + label { background: #00d4b0; border-color: #00d4b0; }
+    .item-check input:checked + label::after { border-color: #fff; }
+    .no-print { display: none !important; }
+  }
+
+  /* ─── Print-only CTA button ─── */
+  .btn-print-only { display: none; }
+  @media print {
+    .btn-print-only {
+      display: inline-flex !important;
+      background: #00d4b0;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+    }
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 26px; }
+    .hero p { font-size: 15px; }
+    .header-inner { flex-direction: column; gap: 12px; }
+    .stats { gap: 16px; }
+    .stat-item .num { font-size: 22px; }
+    .item { padding: 14px; }
+    .item-question { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Header ─── -->
+<header class="header">
+  <div class="header-inner">
+    <a href="https://correctover.com" class="logo" target="_blank">
+      <span class="logo-icon">C</span>
+      <span>Correctover</span>
+    </a>
+    <div class="header-actions">
+      <button class="btn btn-download" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ─── Hero ─── -->
+<section class="hero">
+  <div class="hero-badge">Lead Magnet &middot; AI Security</div>
+  <h1>Cloud Security Assessment Checklist<br><span style="font-weight:400">AI Runtime Edition</span></h1>
+  <p>24-point assessment framework for production AI security. Evaluate your AI infrastructure against industry-leading detection standards.</p>
+  <div class="hero-cta">
+    <a href="mailto:wangguigui@correctover.com" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Book a Free Assessment
+    </a>
+    <a href="https://correctover.com/en" target="_blank" class="btn btn-outline">
+      Learn More &rarr;
+    </a>
+  </div>
+</section>
+
+<!-- ─── Stats ─── -->
+<div class="stats no-print">
+  <div class="stat-item">
+    <div class="num">24</div>
+    <div class="label">Checklist Items</div>
+  </div>
+  <div class="stat-item">
+    <div class="num">6</div>
+    <div class="label">Categories</div>
+  </div>
+  <div class="stat-item">
+    <div class="num">CCS</div>
+    <div class="label">Standard Aligned</div>
+  </div>
+  <div class="stat-item">
+    <div class="num">&lt;15min</div>
+    <div class="label">Assessment Time</div>
+  </div>
+</div>
+
+<!-- ─── Progress ─── -->
+<div class="progress-wrap no-print">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label">
+    <span id="progressText">0 / 24 completed</span>
+    <span id="progressPct">0%</span>
+  </div>
+</div>
+
+<div class="sep"><hr></div>
+
+<!-- ─── Checklist ─── -->
+<main class="main">
+
+<p class="intro-text">
+  Use this checklist to assess your AI runtime security posture. Check off completed items, add notes, then <strong>download as PDF</strong> to share with your team.
+</p>
+
+<!-- ─── CATEGORY 1 ─── -->
+<div class="category" data-category="1">
+  <div class="category-header">
+    <div class="category-number">1</div>
+    <div class="category-title">Runtime Attack Surface</div>
+    <div class="category-count">4 items</div>
+  </div>
+
+  <div class="item" data-index="1">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c1i1">
+        <label for="c1i1"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">01.</span>RCE detection in model inference pipeline</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Are model inference endpoints protected against remote code execution via malicious inputs or deserialization?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="2">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c1i2">
+        <label for="c1i2"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">02.</span>SSRF protection for internal service calls</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Can model-serving components be abused to scan internal networks or access cloud metadata endpoints?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="3">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c1i3">
+        <label for="c1i3"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">03.</span>Cloud credential exfiltration monitoring</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Is there real-time detection for credentials being leaked through model outputs, logs, or error messages?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="4">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c1i4">
+        <label for="c1i4"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">04.</span>Path traversal in file I/O operations</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Are file read/write operations in the AI pipeline guarded against directory traversal attacks?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CATEGORY 2 ─── -->
+<div class="category" data-category="2">
+  <div class="category-header">
+    <div class="category-number">2</div>
+    <div class="category-title">AI Framework Security</div>
+    <div class="category-count">4 items</div>
+  </div>
+
+  <div class="item" data-index="5">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c2i1">
+        <label for="c2i1"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">05.</span>MCP tool call validation and sandboxing</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Are MCP (Model Context Protocol) tool invocations validated and sandboxed to prevent unauthorized actions?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="6">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c2i2">
+        <label for="c2i2"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">06.</span>Agent orchestration pipeline integrity</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Is the agent orchestration pipeline protected against prompt injection and unauthorized workflow manipulation?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="7">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c2i3">
+        <label for="c2i3"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">07.</span>Deserialization attack prevention</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Are pickle, joblib, or other serialization formats in the ML pipeline protected against arbitrary code execution?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="8">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c2i4">
+        <label for="c2i4"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">08.</span>Training data exfiltration detection</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Can the system detect unauthorized extraction of training data through model responses or side channels?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CATEGORY 3 ─── -->
+<div class="category" data-category="3">
+  <div class="category-header">
+    <div class="category-number">3</div>
+    <div class="category-title">Compliance Readiness</div>
+    <div class="category-count">4 items</div>
+  </div>
+
+  <div class="item" data-index="9">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c3i1">
+        <label for="c3i1"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">09.</span>CCS standard alignment (24 detection rules)</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Does your detection pipeline map to Correctover CCS (Cloud Security Standard) with all 24 CRITICAL/HIGH rules?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="10">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c3i2">
+        <label for="c3i2"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">10.</span>SOC2 evidence collection automation</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Is evidence collection for SOC2 Type II audits automated across AI runtime controls?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="11">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c3i3">
+        <label for="c3i3"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">11.</span>Audit trail completeness verification</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Are all AI runtime access events, model inferences, and configuration changes captured in immutable audit trails?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="12">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c3i4">
+        <label for="c3i4"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">12.</span>Incident response time measurement</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">What is your measured mean time to detect (MTTD) and mean time to respond (MTTR) for AI security incidents?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CATEGORY 4 ─── -->
+<div class="category" data-category="4">
+  <div class="category-header">
+    <div class="category-number">4</div>
+    <div class="category-title">Detection Coverage</div>
+    <div class="category-count">4 items</div>
+  </div>
+
+  <div class="item" data-index="13">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c4i1">
+        <label for="c4i1"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">13.</span>Real-time vs batch detection capability</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Does your detection run real-time (sub-second) on inference traffic, or only as batch analysis of logs?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="14">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c4i2">
+        <label for="c4i2"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">14.</span>False positive rate benchmarking</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">What is the measured false positive rate (FPR) of your detection rules under production traffic?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="15">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c4i3">
+        <label for="c4i3"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">15.</span>Detection rule update frequency</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">How frequently are detection rules updated for new AI-specific attack vectors (supply chain, plugin exploits)?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="16">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c4i4">
+        <label for="c4i4"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">16.</span>Custom rule support and extensibility</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Can your security team author custom detection rules specific to your AI workload without vendor lock-in?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CATEGORY 5 ─── -->
+<div class="category" data-category="5">
+  <div class="category-header">
+    <div class="category-number">5</div>
+    <div class="category-title">Deployment &amp; Operations</div>
+    <div class="category-count">4 items</div>
+  </div>
+
+  <div class="item" data-index="17">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c5i1">
+        <label for="c5i1"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">17.</span>Deployment complexity (time to first detection)</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">How long does it take from deployment start to first AI-specific security detection? Hours? Days? Weeks?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="18">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c5i2">
+        <label for="c5i2"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">18.</span>Performance overhead (latency impact P50/P99)</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">What is the measured latency overhead at P50 and P99 for inline detection on inference traffic?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="19">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c5i3">
+        <label for="c5i3"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">19.</span>Integration with existing SIEM/SOC</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Does the solution integrate with your existing SIEM (Splunk, Elastic, Sentinel) and SOC workflows via standard formats?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="20">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c5i4">
+        <label for="c5i4"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">20.</span>Multi-cloud and hybrid environment support</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Does the detection coverage extend across AWS, Azure, GCP, and on-premise AI workloads consistently?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CATEGORY 6 ─── -->
+<div class="category" data-category="6">
+  <div class="category-header">
+    <div class="category-number">6</div>
+    <div class="category-title">Vendor Assessment</div>
+    <div class="category-count">4 items</div>
+  </div>
+
+  <div class="item" data-index="21">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c6i1">
+        <label for="c6i1"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">21.</span>Security team responsiveness (SLA)</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">What is the SLA for security incident response from your vendor's security team? Is 24/7 coverage available?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="22">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c6i2">
+        <label for="c6i2"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">22.</span>Public vulnerability disclosure track record</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Does the vendor have a published vulnerability disclosure policy and a track record of responsible disclosure?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="23">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c6i3">
+        <label for="c6i3"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">23.</span>Independent security audit results</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Has the vendor undergone independent third-party security audits? Are results available under NDA?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-index="24">
+    <div class="item-row">
+      <div class="item-check">
+        <input type="checkbox" id="c6i4">
+        <label for="c6i4"></label>
+      </div>
+      <div class="item-body">
+        <div class="item-question"><span class="item-index">24.</span>Third-party integrations and ecosystem</div>
+        <div class="item-notes" contenteditable="true" data-placeholder="Add notes...">Does the solution integrate with your existing toolchain (LangChain, LlamaIndex, MCP servers, Docker, Kubernetes)?</div>
+        <button class="item-notes-toggle" onclick="toggleNotes(this)">+ Add notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<div class="sep"><hr></div>
+
+<!-- ─── Footer ─── -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="https://correctover.com" target="_blank">Website</a>
+    <a href="https://correctover.com/en" target="_blank">Documentation</a>
+    <a href="mailto:wangguigui@correctover.com">Contact</a>
+    <a href="https://github.com/correctover" target="_blank">GitHub</a>
+  </div>
+  <p>&copy; 2026 <span class="brand">Correctover</span>. All rights reserved. &middot; Cloud Security Assessment Checklist &mdash; AI Runtime Edition</p>
+</footer>
+
+<script>
+  // ─── Progress Tracking ───
+  const totalItems = 24;
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const progressPct = document.getElementById('progressPct');
+
+  function updateProgress() {
+    const checked = document.querySelectorAll('.item-check input[type="checkbox"]:checked').length;
+    const pct = Math.round((checked / totalItems) * 100);
+    progressBar.style.width = pct + '%';
+    progressText.textContent = checked + ' / ' + totalItems + ' completed';
+    progressPct.textContent = pct + '%';
+
+    document.querySelectorAll('.item').forEach(function(item) {
+      const cb = item.querySelector('input[type="checkbox"]');
+      if (cb && cb.checked) {
+        item.classList.add('completed');
+      } else {
+        item.classList.remove('completed');
+      }
+    });
+  }
+
+  document.querySelectorAll('.item-check input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', updateProgress);
+  });
+
+  // ─── Notes Toggle ───
+  function toggleNotes(btn) {
+    const noteBox = btn.parentElement.querySelector('.item-notes');
+    if (noteBox) {
+      const isActive = noteBox.classList.toggle('active');
+      btn.textContent = isActive ? '- Hide notes' : '+ Add notes';
+    }
+  }
+
+  // Show notes if they have content
+  document.querySelectorAll('.item-notes').forEach(function(note) {
+    if (note.textContent.trim() && note.textContent.trim() !== note.getAttribute('data-placeholder')) {
+      note.classList.add('active');
+      const toggle = note.parentElement.querySelector('.item-notes-toggle');
+      if (toggle) toggle.textContent = '- Hide notes';
+    }
+  });
+
+  // ─── Initial progress ───
+  updateProgress();
+</script>
+
+</body>
+</html>
