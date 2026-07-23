@@ -3,499 +3,261 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correctover — LLM Reliability Engineering Platform</title>
-  <meta name="description" content="Correctover is the LLM Reliability Engineering platform for AI agents. Protocol-level contract validation, verified failover, MCP security scanning, CCS v1.0 standard. 84.1% self-heal rate across 20K+ trajectories." />
-  <meta name="keywords" content="LLM reliability, AI agent security, MCP security, self-healing, failover, contract validation, CCS standard, runtime guard, Correctover" />
+  <title>Correctover — The MCP Security Standard (CCS v1.0)</title>
+  <meta name="description" content="CCS v1.0 is the security standard for MCP. 215 fault types, 52 real exploits, 8 verified PoCs, 6 CVEs. Get certified — or stay exposed." />
+  <meta name="keywords" content="MCP security standard, CCS, Correctover Certified, MCP vulnerability, agent security, runtime guard" />
   <meta name="author" content="Correctover" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://correctover.com/" />
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://correctover.com/" />
-  <meta property="og:title" content="Correctover — LLM Reliability Engineering Platform" />
-  <meta property="og:description" content="Protocol-level contract validation, verified failover, MCP security scanning. 84.1% self-heal rate across 20K+ trajectories. 6 CVEs filed. CCS v1.0 standard." />
+  <meta property="og:title" content="Correctover — The MCP Security Standard" />
+  <meta property="og:description" content="CCS v1.0: 215 fault types, 52 real exploits, 8 verified PoCs, 6 CVEs. Get certified." />
   <meta property="og:image" content="https://correctover.com/assets/og-image.png" />
   <meta property="og:site_name" content="Correctover" />
-  <meta property="og:locale" content="en_US" />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://correctover.com/" />
-  <meta name="twitter:title" content="Correctover — LLM Reliability Engineering Platform" />
-  <meta name="twitter:description" content="Protocol-level contract validation, verified failover, MCP security scanning. 84.1% self-heal rate. 6 CVEs filed. CCS v1.0 standard." />
+  <meta name="twitter:title" content="Correctover — The MCP Security Standard" />
+  <meta name="twitter:description" content="CCS v1.0: 215 fault types, 52 real exploits, 8 verified PoCs, 6 CVEs." />
   <meta name="twitter:image" content="https://correctover.com/assets/og-image.png" />
   <meta name="twitter:creator" content="@Whatqw4u" />
 
-  <!-- Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
+    "@type": "Organization",
     "name": "Correctover",
-    "description": "LLM Reliability Engineering platform — protocol-level contract validation, verified failover, MCP security scanning, CCS v1.0 standard.",
+    "description": "The MCP security standard (CCS v1.0). 215 fault types, 52 real exploits, 8 verified PoCs, 6 CVEs.",
     "url": "https://correctover.com",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "Cross-platform",
-    "offers": [
-      {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free tier: 50 calls/day"},
-      {"@type": "Offer", "price": "29", "priceCurrency": "USD", "description": "Pro monthly"}
-    ],
-    "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "723"}
+    "foundingDate": "2025"
   }
   </script>
+
   <style>
     :root {
-      --bg: #0a0e17;
-      --bg-alt: #0f1521;
-      --card: #1e293b;
-      --card-hover: #243449;
-      --primary: #38bdf8;
-      --primary-dim: #0ea5e9;
-      --green: #4ade80;
-      --yellow: #facc15;
-      --red: #f87171;
-      --purple: #a78bfa;
-      --text: #e2e8f0;
-      --text-dim: #94a3b8;
-      --text-faint: #64748b;
-      --border: #334155;
-      --border-light: #475569;
-      --radius: 16px;
-      --radius-sm: 8px;
+      --bg: #0a0e17; --card: #1e293b; --primary: #38bdf8; --primary-dim: #0ea5e9;
+      --green: #4ade80; --yellow: #facc15; --red: #f87171;
+      --text: #e2e8f0; --text-dim: #94a3b8; --text-faint: #64748b;
+      --border: #334155; --radius: 16px; --radius-sm: 8px;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
     a { color: var(--primary); text-decoration: none; }
     a:hover { text-decoration: underline; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Nav */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    nav .logo {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border); }
+    nav .logo { font-size: 20px; font-weight: 800; }
     nav .logo span { color: var(--primary); }
-
-    nav .nav-links {
-      display: flex;
-      gap: 28px;
-      align-items: center;
-    }
-
-    nav .nav-links a {
-      color: var(--text-dim);
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
+    nav .nav-links { display: flex; gap: 24px; align-items: center; }
+    nav .nav-links a { color: var(--text-dim); font-size: 14px; }
     nav .nav-links a:hover { color: var(--text); text-decoration: none; }
 
-    /* Hero */
-    .hero {
-      text-align: center;
-      padding: 80px 0 60px;
+    .hero { text-align: center; padding: 80px 0 48px; }
+    .hero .badge {
+      display: inline-block; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3);
+      border-radius: 100px; padding: 8px 20px; font-size: 13px; font-weight: 600;
+      color: var(--primary); margin-bottom: 28px;
     }
-
-    .hero h1 {
-      font-size: 48px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
-      line-height: 1.15;
-      margin-bottom: 20px;
-    }
-
+    .hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 20px; }
     .hero h1 .accent { color: var(--primary); }
+    .hero h1 .red { color: var(--red); }
+    .hero p { font-size: 19px; color: var(--text-dim); max-width: 600px; margin: 0 auto 36px; }
 
-    .hero p {
-      font-size: 20px;
-      color: var(--text-dim);
-      max-width: 640px;
-      margin: 0 auto 40px;
-    }
+    .btn { display: inline-block; padding: 14px 32px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: var(--primary-dim); text-decoration: none; }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); margin-left: 12px; }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); text-decoration: none; }
 
-    .hero .pip-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 10px 24px;
-      font-family: "SF Mono", "Fira Code", monospace;
-      font-size: 14px;
-      color: var(--text-dim);
-    }
+    .proof-bar { display: flex; justify-content: center; gap: 40px; padding: 28px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 64px; }
+    .proof-item { text-align: center; }
+    .proof-item .num { font-size: 32px; font-weight: 800; }
+    .proof-item .num.red { color: var(--red); }
+    .proof-item .label { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .hero .pip-badge .prompt { color: var(--green); }
+    .section { padding: 0 0 64px; }
+    .section h2 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+    .section .sub { color: var(--text-dim); font-size: 16px; margin-bottom: 32px; }
 
-    /* Pricing grid */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
-      padding: 40px 0 80px;
-    }
+    .standard-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px; margin-bottom: 24px; }
+    .standard-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .standard-card p { color: var(--text-dim); font-size: 15px; margin-bottom: 16px; }
+    .standard-card .components { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+    .standard-card .component { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
+    .standard-card .component .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+    .standard-card .component .desc { font-size: 12px; color: var(--text-faint); }
 
-    .pricing-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px 32px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      transition: border-color 0.2s, transform 0.2s;
-    }
+    .cert-flow { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+    .cert-step { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; text-align: center; }
+    .cert-step .num { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; margin: 0 auto 12px; }
+    .cert-step h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .cert-step p { font-size: 13px; color: var(--text-dim); }
 
-    .pricing-card:hover {
-      border-color: var(--border-light);
-      transform: translateY(-2px);
-    }
+    .pricing-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .plan { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px 28px; display: flex; flex-direction: column; position: relative; }
+    .plan.featured { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary), 0 8px 32px rgba(56,189,248,0.1); }
+    .plan .tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--bg); font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 100px; text-transform: uppercase; }
+    .plan .name { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .plan .desc { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; }
+    .plan .price { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+    .plan .price .period { font-size: 14px; color: var(--text-dim); font-weight: 400; }
+    .plan .price .sub { font-size: 12px; color: var(--text-faint); }
+    .plan ul { list-style: none; margin-bottom: 24px; flex-grow: 1; }
+    .plan ul li { font-size: 13px; padding: 6px 0; display: flex; gap: 8px; }
+    .plan ul li::before { content: "✓"; color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .plan .btn { text-align: center; display: block; }
 
-    .pricing-card.featured {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px var(--primary), 0 8px 32px rgba(56, 189, 248, 0.1);
-    }
+    .install { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px; text-align: center; }
+    .install h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .install p { color: var(--text-dim); font-size: 15px; margin-bottom: 20px; }
+    .install .cmd { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 20px; font-family: "SF Mono", monospace; font-size: 14px; color: var(--green); text-align: left; margin-bottom: 12px; }
+    .install .cmd .dollar { color: var(--text-faint); margin-right: 8px; }
 
-    .pricing-card .badge-popular {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--primary);
-      color: var(--bg);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 16px;
-      border-radius: 100px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .pricing-card .agent-name {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .pricing-card .agent-name .icon {
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    .pricing-card .agent-desc {
-      font-size: 14px;
-      color: var(--text-dim);
-      margin-bottom: 28px;
-      min-height: 42px;
-    }
-
-    .pricing-card .price {
-      margin-bottom: 28px;
-    }
-
-    .pricing-card .price .amount {
-      font-size: 42px;
-      font-weight: 800;
-      letter-spacing: -1px;
-    }
-
-    .pricing-card .price .period {
-      font-size: 16px;
-      color: var(--text-dim);
-      font-weight: 400;
-    }
-
-    .pricing-card .price .sub {
-      font-size: 13px;
-      color: var(--text-faint);
-      margin-top: 4px;
-    }
-
-    .pricing-card .features {
-      list-style: none;
-      margin-bottom: 32px;
-      flex-grow: 1;
-    }
-
-    .pricing-card .features li {
-      font-size: 14px;
-      color: var(--text);
-      padding: 8px 0;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .pricing-card .features li::before {
-      content: "";
-      display: block;
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      margin-top: 2px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E") center/contain no-repeat;
-    }
-
-    .pricing-card .features li.disabled {
-      color: var(--text-faint);
-    }
-
-    .pricing-card .features li.disabled::before {
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") center/contain no-repeat;
-    }
-
-    .pricing-card .free-tier-note {
-      background: rgba(74, 222, 128, 0.08);
-      border: 1px solid rgba(74, 222, 128, 0.2);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      font-size: 13px;
-      color: var(--green);
-      margin-bottom: 24px;
-      text-align: center;
-    }
-
-    .btn {
-      display: block;
-      text-align: center;
-      padding: 14px 24px;
-      border-radius: var(--radius-sm);
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-      text-decoration: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: var(--bg);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dim);
-      text-decoration: none;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border-light);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Bottom CTA */
-    .bottom-cta {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 48px 40px;
-      text-align: center;
-      margin-bottom: 80px;
-    }
-
-    .bottom-cta h2 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .bottom-cta p {
-      color: var(--text-dim);
-      font-size: 16px;
-      margin-bottom: 28px;
-    }
-
-    .bottom-cta .pip-commands {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .bottom-cta .pip-cmd {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 20px;
-      font-family: "SF Mono", "Fira Code", monospace;
-      font-size: 14px;
-      color: var(--green);
-      text-align: left;
-    }
-
-    .bottom-cta .pip-cmd .dollar { color: var(--text-faint); margin-right: 8px; }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 0;
-      text-align: center;
-      color: var(--text-faint);
-      font-size: 13px;
-    }
-
+    footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--text-faint); font-size: 13px; }
     footer a { color: var(--text-dim); }
 
-    @media (max-width: 900px) {
-      .pricing-grid { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 32px; }
-      .hero p { font-size: 16px; }
-    }
+    @media (max-width: 768px) { .pricing-row, .cert-flow, .standard-card .components { grid-template-columns: 1fr; } .proof-bar { flex-wrap: wrap; gap: 20px; } .hero h1 { font-size: 30px; } }
   </style>
 </head>
 <body>
   <div class="container">
     <nav>
-      <div class="logo">Correctover <span>Agent Suite</span></div>
+      <div class="logo">Correctover <span>CCS</span></div>
       <div class="nav-links">
-        <a href="/agents/">Agents</a>
-        <a href="/agents/pricing.html">Pricing</a>
-        <a href="/agents/security-audit.html">Security Audit</a>
-        <a href="/agents/compliance-check.html">Compliance Check</a>
-        <a href="/agents/runtime-guard.html">Runtime Guard</a>
-        <a href="https://correctover.com">correctover.com</a>
+        <a href="#standard">The Standard</a>
+        <a href="#certify">Get Certified</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://github.com/Correctover/standards">Spec</a>
+        <a href="/checkout.html">Buy</a>
       </div>
     </nav>
 
-    <!-- Hero -->
     <section class="hero">
-      <h1>Correctover Agent Suite<br><span class="accent">Download. Pay. Protected.</span></h1>
-      <p>Three AI Agent security tools — scan vulnerabilities, certify compliance, and guard runtime. Install from PyPI in seconds. Free tier, no credit card required.</p>
-      <div class="pip-badge">
-        <span class="prompt">$</span> pip install correctover-security-audit
+      <div class="badge">CCS v1.0 · DOI: 10.5281/zenodo.21234580</div>
+      <h1>The security standard<br>for <span class="accent">MCP</span>.</h1>
+      <p>MCP protocol doesn't enforce security. We do. 215 fault types. 52 real exploits. 8 verified PoCs. 6 CVEs. Get certified or stay exposed.</p>
+      <a href="#certify" class="btn btn-primary">Get Certified →</a>
+      <a href="#standard" class="btn btn-secondary">Read the spec</a>
+    </section>
+
+    <div class="proof-bar">
+      <div class="proof-item"><div class="num red">215</div><div class="label">Fault types</div></div>
+      <div class="proof-item"><div class="num red">52</div><div class="label">Real exploits</div></div>
+      <div class="proof-item"><div class="num red">8</div><div class="label">Verified PoCs</div></div>
+      <div class="proof-item"><div class="num">6</div><div class="label">CVEs filed</div></div>
+      <div class="proof-item"><div class="num">20K+</div><div class="label">Trajectories</div></div>
+      <div class="proof-item"><div class="num">9.8</div><div class="label">Max CVSS</div></div>
+    </div>
+
+    <section class="section" id="standard">
+      <h2>What is CCS?</h2>
+      <p class="sub">Correctover Conformance Specification — the runtime security standard for MCP.</p>
+      <div class="standard-card">
+        <h3>5-Component Architecture</h3>
+        <p>Every MCP Server claiming CCS compliance must pass all 5 components. No exceptions.</p>
+        <div class="components">
+          <div class="component"><div class="name">1. Runtime Observatory</div><div class="desc">Capture every agent execution trace with cryptographic integrity</div></div>
+          <div class="component"><div class="name">2. Fault Taxonomy</div><div class="desc">517-type runtime failure classification (215 public)</div></div>
+          <div class="component"><div class="name">3. Required(τ) ⊆ Supported(τ)</div><div class="desc">Formal conformance criterion — no field drift</div></div>
+          <div class="component"><div class="name">4. Receipt Schema</div><div class="desc">Cryptographic chain integrity for every output</div></div>
+          <div class="component"><div class="name">5. Conformance Protocol</div><div class="desc">Four-axis verification: schema, integrity, cost, compliance</div></div>
+          <div class="component"><div class="name">+ Audit Logger</div><div class="desc">Immutable forensic trail for SOC2/HIPAA/GDPR</div></div>
+        </div>
+      </div>
+      <div class="standard-card">
+        <h3>Backed by evidence</h3>
+        <p>Not theory. 52 MCP Servers exploited in the wild. 8 PoCs with accepted advisories (MSRC, GitHub). 6 CVEs assigned. 20,071 production agent traces analyzed. Peer-reviewed. DOI-registered. Blockchain-timestamped.</p>
       </div>
     </section>
 
-    <!-- Pricing Grid -->
-    <section class="pricing-grid">
-      <!-- Security Audit -->
-      <div class="pricing-card">
-        <div class="agent-name"><span class="icon">🔒</span> Security Audit</div>
-        <div class="agent-desc">AI Agent vulnerability scanner — 215 fault types, 88 detection rules, 52 ZDI cases.</div>
-        <div class="price">
-          <span class="amount">$499</span><span class="period">/mo</span>
-          <div class="sub">Pro plan — unlimited scans + CI</div>
+    <section class="section" id="certify">
+      <h2>Get Certified</h2>
+      <p class="sub">Display the "CCS Certified" badge. Your users trust your MCP Server.</p>
+      <div class="cert-flow">
+        <div class="cert-step">
+          <div class="num">1</div>
+          <h4>Scan</h4>
+          <p>Run the free scanner against your MCP config. See what's exposed.</p>
         </div>
-        <div class="free-tier-note">Free: 50 scans/day, no credit card</div>
-        <ul class="features">
-          <li>215 fault types across 88 detection rules</li>
-          <li>52 ZDI cases, 8 verified PoCs</li>
-          <li>19 CVE-class vulnerability detection</li>
-          <li>MCP config &amp; Agent code scanning</li>
-          <li>JSON / SARIF output for CI/CD</li>
-          <li class="disabled">Custom detection rules (Pro)</li>
-          <li class="disabled">Slack/GitHub PR integration (Pro)</li>
-        </ul>
-        <div class="btn-row">
-          <a href="/agents/security-audit.html" class="btn btn-primary">View Details</a>
-          <a href="https://correctover.com/waitlist" class="btn btn-secondary">Upgrade to Pro</a>
+        <div class="cert-step">
+          <div class="num">2</div>
+          <h4>Fix</h4>
+          <p>Fix all findings. Install Runtime Guard for continuous protection.</p>
         </div>
-      </div>
-
-      <!-- Compliance Check -->
-      <div class="pricing-card featured">
-        <div class="badge-popular">Certification</div>
-        <div class="agent-name"><span class="icon">📋</span> Compliance Check</div>
-        <div class="agent-desc">MCP OAuth 2.1 &amp; CCS v1.0 compliance certifier. Enforce the 2026-07-28 mandate.</div>
-        <div class="price">
-          <span class="amount">$2,999</span>
-          <div class="sub">$999/year renewal · Free check (no cert)</div>
+        <div class="cert-step">
+          <div class="num">3</div>
+          <h4>Audit</h4>
+          <p>Correctover audits your server. OAuth 2.1 + CCS v1.0 compliance check.</p>
         </div>
-        <div class="free-tier-note">Free: compliance check (no certificate)</div>
-        <ul class="features">
-          <li>OAuth 2.1 compliance (8 checks)</li>
-          <li>CCS v1.0 standard compliance (5 checks)</li>
-          <li>MCP protocol compliance (5 checks)</li>
-          <li>Official Correctover certification badge</li>
-          <li>Automated re-certification scheduling</li>
-          <li>Public registry listing (certified)</li>
-          <li class="disabled">Custom compliance policies (Enterprise)</li>
-        </ul>
-        <div class="btn-row">
-          <a href="/agents/compliance-check.html" class="btn btn-primary">View Details</a>
-          <a href="https://correctover.com/waitlist" class="btn btn-secondary">Get Certified</a>
-        </div>
-      </div>
-
-      <!-- Runtime Guard -->
-      <div class="pricing-card">
-        <div class="agent-name"><span class="icon">🛡️</span> Runtime Guard</div>
-        <div class="agent-desc">Real-time RCE/SSRF/Env leak interception at 22µs P50 via GuardrailProvider.</div>
-        <div class="price">
-          <span class="amount">$1,999</span><span class="period">/mo</span>
-          <div class="sub">Enterprise plan — unlimited calls</div>
-        </div>
-        <div class="free-tier-note">Free: 1,500 calls/month (50/day)</div>
-        <ul class="features">
-          <li>Intercept RCE attempts (CWE-78)</li>
-          <li>Block SSRF attacks (CWE-918)</li>
-          <li>Prevent env variable leaks (CWE-200)</li>
-          <li>22µs P50 latency overhead</li>
-          <li>MCP Server mode: diagnose_error, get_fault_pattern, get_repair_suggestion</li>
-          <li>Custom guardrail policies (Enterprise)</li>
-          <li class="disabled">Dedicated support (Enterprise)</li>
-        </ul>
-        <div class="btn-row">
-          <a href="/agents/runtime-guard.html" class="btn btn-primary">View Details</a>
-          <a href="https://correctover.com/waitlist" class="btn btn-secondary">Contact Sales</a>
+        <div class="cert-step">
+          <div class="num">4</div>
+          <h4>Certified</h4>
+          <p>Get the badge. Listed in public registry. Annual re-certification.</p>
         </div>
       </div>
     </section>
 
-    <!-- Bottom CTA -->
-    <section class="bottom-cta">
-      <h2>All agents available on PyPI</h2>
-      <p>Install any agent in seconds. Free tier starts immediately — no signup required.</p>
-      <div class="pip-commands">
-        <div class="pip-cmd"><span class="dollar">$</span>pip install correctover-security-audit</div>
-        <div class="pip-cmd"><span class="dollar">$</span>pip install correctover-compliance-check</div>
-        <div class="pip-cmd"><span class="dollar">$</span>pip install correctover-runtime-guard</div>
+    <section class="section" id="pricing">
+      <h2>Pricing</h2>
+      <p class="sub">Standard is free. Certification costs money. Guard is insurance.</p>
+      <div class="pricing-row">
+        <div class="plan">
+          <div class="name">Free</div>
+          <div class="desc">Scan your exposure</div>
+          <div class="price">¥0<span class="period"></span><div class="sub">Unlimited scans</div></div>
+          <ul>
+            <li>Vulnerability scanning (unlimited)</li>
+            <li>See first 2 risks per scan</li>
+            <li>CCS v1.0 spec (free, DOI-registered)</li>
+            <li>20K trajectory sample data</li>
+          </ul>
+          <a href="#install" class="btn btn-secondary">Scan free</a>
+        </div>
+        <div class="plan featured">
+          <div class="tag">Certify</div>
+          <div class="name">Certified</div>
+          <div class="desc">CCS v1.0 certification + guard</div>
+          <div class="price">¥1,999<span class="period">/year</span><div class="sub">+ ¥499/year re-cert</div></div>
+          <ul>
+            <li>Full vulnerability report</li>
+            <li>OAuth 2.1 + CCS v1.0 audit</li>
+            <li>CCS Certified badge + public listing</li>
+            <li>Runtime Guard (real-time blocking)</li>
+            <li>Auto-heal (84.1% resolved)</li>
+            <li>Threat intelligence feed</li>
+          </ul>
+          <a href="/checkout.html" class="btn btn-primary">Get Certified →</a>
+        </div>
+        <div class="plan">
+          <div class="name">Enterprise</div>
+          <div class="desc">Multiple servers + custom</div>
+          <div class="price">¥9,999<span class="period">/year</span><div class="sub">Up to 10 MCP servers</div></div>
+          <ul>
+            <li>Everything in Certified</li>
+            <li>10 MCP server certifications</li>
+            <li>Custom compliance policies</li>
+            <li>Private threat intel feed</li>
+            <li>SLA + dedicated support</li>
+            <li>On-site audit (optional)</li>
+          </ul>
+          <a href="mailto:wangguigui@correctover.com" class="btn btn-secondary">Contact</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="install" id="install">
+        <h2>Start free — scan your MCP Server</h2>
+        <p>5 seconds. No signup. See what's exposed.</p>
+        <div class="cmd"><span class="dollar">$</span>pip install correctover-security-audit</div>
+        <div class="cmd"><span class="dollar">$</span>correctover-security-audit scan-mcp config.json</div>
+        <a href="/checkout.html" class="btn btn-primary">Get Certified →</a>
       </div>
     </section>
 
     <footer>
-      <p>&copy; 2026 Correctover · <a href="https://correctover.com">correctover.com</a> · Apache-2.0 Licensed · <a href="/agents/pricing.html">Full Pricing</a></p>
+      <p>&copy; 2026 Correctover · CCS v1.0 (DOI: <a href="https://doi.org/10.5281/zenodo.21234580">10.5281/zenodo.21234580</a>) · <a href="https://github.com/Correctover/standards">Spec</a> · <a href="/checkout.html">Pricing</a></p>
     </footer>
   </div>
 </body>
